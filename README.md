@@ -63,7 +63,7 @@ string_t out = serializeJson(reply);
 | `<json/json_types.h>`   | `Json` value type, `JsonObject` container, type predicates |
 | `<json/json.h>`         | `JsonWrapper` full parser + free single-key helpers        |
 | `<json/json_utils.h>`   | `serializeJson`, raw-buffer extractors, builder helpers    |
-| `<ungula_json_lib.h>`   | Umbrella include — pulls all of the above                  |
+| `<ungula_json.h>`   | Umbrella include — pulls all of the above                  |
 
 Everything lives in `ungula::json::`.
 

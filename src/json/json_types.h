@@ -278,20 +278,20 @@ namespace ungula {
                                 if (quote) {
                                     string_t out;
                                     out.push_back('"');
-                                    out += stru::escapeString(str);
+                                    out += str::escapeString(str);
                                     out.push_back('"');
                                     return out;
                                 }
-                                return stru::escapeString(str);
+                                return str::escapeString(str);
                             }
                             string_t operator()(int val) const {
-                                return stru::num_to_string(val);
+                                return str::num_to_string(val);
                             }
                             string_t operator()(float val) const {
-                                return stru::num_to_string(val);
+                                return str::num_to_string(val);
                             }
                             string_t operator()(double val) const {
-                                return stru::num_to_string(val);
+                                return str::num_to_string(val);
                             }
                             string_t operator()(bool val) const {
                                 return val ? "true" : "false";
@@ -305,7 +305,7 @@ namespace ungula {
                                     }
                                     first = false;
                                     out.push_back('"');
-                                    out += stru::escapeString(pair.first);
+                                    out += str::escapeString(pair.first);
                                     out.push_back('"');
                                     out.push_back(':');
                                     out += pair.second.serialize(quote);

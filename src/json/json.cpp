@@ -40,16 +40,16 @@ namespace ungula {
                 }
 
                 for (const auto& [full_key, value] : source) {
-                    if (full_key != key && stru::startsWith(full_key, key)) {
+                    if (full_key != key && str::startsWith(full_key, key)) {
                         string_t current_key = full_key;
-                        stru::replaceAll(current_key, key_dotted, new_root_dotted);
+                        str::replaceAll(current_key, key_dotted, new_root_dotted);
                         keyValueMap_.emplace_back(std::move(current_key), value);
                     }
                 }
             } else {
                 // No renaming — keep the original full keys.
                 for (const auto& [full_key, value] : source) {
-                    if (full_key != key && stru::startsWith(full_key, key)) {
+                    if (full_key != key && str::startsWith(full_key, key)) {
                         keyValueMap_.emplace_back(full_key, value);
                     }
                 }
@@ -79,19 +79,19 @@ namespace ungula {
                 return;
             }
 
-            const char* p = stru::skipWhitespace(jsonStr);
+            const char* p = str::skipWhitespace(jsonStr);
             if (*p == '\0') {
                 return;
             }
 
             // Pre-reserve based on a colon count — overshoots a bit for nested
             // objects but avoids most of the per-key reallocations.
-            keyValueMap_.reserve(stru::countChar(string_t(jsonStr), ':'));
+            keyValueMap_.reserve(str::countChar(string_t(jsonStr), ':'));
 
             char keyBuffer[512];  // upper bound on dotted-key length
             p = parseObject(p, keyBuffer, 0, 0);
             if (p != nullptr) {
-                p = stru::skipWhitespace(p);
+                p = str::skipWhitespace(p);
                 validJson_ = (*p == '\0');
                 isEmpty_ = keyValueMap_.empty();
             }
@@ -123,7 +123,7 @@ namespace ungula {
                 return p;
             }
 
-            p = stru::skipWhitespace(p);
+            p = str::skipWhitespace(p);
             if (*p != '{') {
                 return nullptr;
             }
@@ -136,7 +136,7 @@ namespace ungula {
                 keyValueMap_.emplace_back(keyBuffer, nullptr);
             }
 
-            p = stru::skipWhitespace(p);
+            p = str::skipWhitespace(p);
             if (*p == '}') {
                 return p + 1;  // empty object
             }
@@ -145,7 +145,7 @@ namespace ungula {
             float fval = 0.0f;
             double dval = 0.0;
             while (*p != '\0' && *p != '}') {
-                p = stru::skipWhitespace(p);
+                p = str::skipWhitespace(p);
                 if (*p == '}') {
                     break;
                 }
@@ -161,16 +161,16 @@ namespace ungula {
                 if (p == nullptr) {
                     return nullptr;
                 }
-                stru::trimWhitespace(keyBuffer + bufferOffset, keyLen);
+                str::trimWhitespace(keyBuffer + bufferOffset, keyLen);
                 bufferOffset += keyLen;
 
                 // Expect colon.
-                p = stru::skipWhitespace(p);
+                p = str::skipWhitespace(p);
                 if (*p != ':') {
                     return nullptr;
                 }
                 ++p;
-                p = stru::skipWhitespace(p);
+                p = str::skipWhitespace(p);
 
                 if (*p == '{') {
                     // Nested object — recurse.
@@ -230,7 +230,7 @@ namespace ungula {
                 // Reset the buffer offset back to the parent level.
                 bufferOffset = keyStart;
 
-                p = stru::skipWhitespace(p);
+                p = str::skipWhitespace(p);
                 if (*p == ',') {
                     ++p;
                 } else if (*p != '}') {
@@ -301,7 +301,7 @@ namespace ungula {
         const char* JsonWrapper::parseValueDirect(const char* p, char* buffer, size_t* outLen,
                                                   Json::Type& type) const {
             *outLen = 0;
-            p = stru::skipWhitespace(p);
+            p = str::skipWhitespace(p);
 
             if (*p == '"') {
                 type = Json::Type::String;
@@ -358,7 +358,7 @@ namespace ungula {
 
             bool first = true;
             for (const auto& [full_key, value] : keyValueMap_) {
-                if (!stru::startsWith(full_key, prefix)) {
+                if (!str::startsWith(full_key, prefix)) {
                     continue;
                 }
                 string_t subkey = full_key.substr(prefixLen);
@@ -394,7 +394,7 @@ namespace ungula {
 
             JsonObject out;
             for (const auto& [k, value] : keyValueMap_) {
-                if (!stru::startsWith(k, prefix)) {
+                if (!str::startsWith(k, prefix)) {
                     continue;
                 }
                 out.emplace_back(k.substr(prefixLen), value);

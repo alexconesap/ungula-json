@@ -166,7 +166,7 @@ namespace ungula {
                 first = false;
 
                 out.push_back('"');
-                out += stru::escapeString(key);
+                out += str::escapeString(key);
                 out.push_back('"');
                 out.push_back(':');
 

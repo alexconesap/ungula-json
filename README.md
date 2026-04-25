@@ -31,6 +31,7 @@ type aliases and a handful of string utilities.
 #include <json/json_utils.h>
 
 using namespace ungula::json;
+using ungula::string_t;          // one-liner alias for the project-wide `std::string`
 
 const char* payload =
     R"({"action":"capture","payload":{"settings":{"roi":"xx","quality":100}}})";
@@ -303,10 +304,13 @@ validation, layer it on top.
 
 ## Dependencies
 
-- `UngulaCore` (`lib`) — provides `<util/string_types.h>` (`string_t`,
-  `string_view_t`) and `<util/string_utils.h>` (`stru::skipWhitespace`,
-  `stru::startsWith`, `stru::escapeString`, `stru::num_to_string`,
-  `stru::trimWhitespace`, `stru::countChar`, `stru::replaceAll`).
+- `UngulaCore` (`lib`) — provides `<util/string_types.h>` (`ungula::string_t`,
+  `ungula::string_view_t`) and `<util/string_utils.h>` (`ungula::str::skipWhitespace`,
+  `ungula::str::startsWith`, `ungula::str::escapeString`, `ungula::str::num_to_string`,
+  `ungula::str::trimWhitespace`, `ungula::str::countChar`, `ungula::str::replaceAll`).
+  Code that lives inside `namespace ungula::json { ... }` finds these unqualified
+  via parent-namespace lookup, which is why the JSON sources just write
+  `string_t` and `str::escapeString(...)`.
 
 That's it. No Arduino headers. No logger. No FreeRTOS.
 

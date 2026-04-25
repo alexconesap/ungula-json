@@ -12,6 +12,7 @@
 // Bring everything into the unqualified namespace so the test bodies stay
 // readable. Test code is allowed to do this; library code never should.
 using namespace ungula::json;
+using ungula::string_t;
 
 TEST(JsonTest, EmptyJson) {
     string_t original_payload = "";

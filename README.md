@@ -31,7 +31,7 @@ type aliases and a handful of string utilities.
 #include <json/json_utils.h>
 
 using namespace ungula::json;
-using ungula::string_t;          // one-liner alias for the project-wide `std::string`
+using ungula::core::util::string_t;          // one-liner alias for the project-wide `std::string`
 
 const char* payload =
     R"({"action":"capture","payload":{"settings":{"roi":"xx","quality":100}}})";
@@ -304,10 +304,10 @@ validation, layer it on top.
 
 ## Dependencies
 
-- `UngulaCore` (`lib`) — provides `<util/string_types.h>` (`ungula::string_t`,
-  `ungula::string_view_t`) and `<util/string_utils.h>` (`ungula::str::skipWhitespace`,
-  `ungula::str::startsWith`, `ungula::str::escapeString`, `ungula::str::num_to_string`,
-  `ungula::str::trimWhitespace`, `ungula::str::countChar`, `ungula::str::replaceAll`).
+- `UngulaCore` (`lib`) — provides `<ungula/core/util/string_types.h>` (`ungula::core::util::string_t`,
+  `ungula::core::util::string_view_t`) and `<ungula/core/util/string_utils.h>` (`ungula::core::util::str::skipWhitespace`,
+  `ungula::core::util::str::startsWith`, `ungula::core::util::str::escapeString`, `ungula::core::util::str::num_to_string`,
+  `ungula::core::util::str::trimWhitespace`, `ungula::core::util::str::countChar`, `ungula::core::util::str::replaceAll`).
   Code that lives inside `namespace ungula::json { ... }` finds these unqualified
   via parent-namespace lookup, which is why the JSON sources just write
   `string_t` and `str::escapeString(...)`.

@@ -27,8 +27,8 @@ include_directories(
 
 add_executable(test_json
     test_json.cpp
-    ${LIB_JSON_SRC}/json/json.cpp
-    ${LIB_JSON_SRC}/json/json_utils.cpp
+    ${LIB_JSON_SRC}/ungula/json/json.cpp
+    ${LIB_JSON_SRC}/ungula/json/json_utils.cpp
 )
 target_link_libraries(test_json gtest_main)
 

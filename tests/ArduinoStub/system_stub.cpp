@@ -1,5 +1,5 @@
 // Stub for SystemControl used by OTA updater tests
-#include <system/system_reboot.h>
+#include <ungula/core/system/system_reboot.h>
 
 namespace ungula {
 

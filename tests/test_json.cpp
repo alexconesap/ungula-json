@@ -4,15 +4,15 @@
 
 #include <gtest/gtest.h>
 
-#include "json/json.h"
-#include "json/json_types.h"
-#include "json/json_utils.h"
+#include <ungula/json/json.h>
+#include <ungula/json/json_types.h>
+#include <ungula/json/json_utils.h>
 #include "test_helpers.h"
 
 // Bring everything into the unqualified namespace so the test bodies stay
 // readable. Test code is allowed to do this; library code never should.
 using namespace ungula::json;
-using ungula::string_t;
+using ungula::core::util::string_t;
 
 TEST(JsonTest, EmptyJson) {
     string_t original_payload = "";

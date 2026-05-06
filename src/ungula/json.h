@@ -10,16 +10,16 @@
 // Ungula Embedded JSON Library — single include for the Arduino discovery
 // chain. Real code should include the specific headers it needs:
 //
-//   #include <json/json_types.h>   // Json + JsonObject value types
-//   #include <json/json.h>         // JsonWrapper full parser
-//   #include <json/json_utils.h>   // helpers + single-key extractors
+//   #include <ungula/json/json_types.h>   // Json + JsonObject value types
+//   #include <ungula/json/json.h>         // JsonWrapper full parser
+//   #include <ungula/json/json_utils.h>   // helpers + single-key extractors
 //
-// Pulling in <util/string_types.h> here keeps Arduino CLI's library
+// Pulling in <ungula/core/util/string_types.h> here keeps Arduino CLI's library
 // discovery happy: if a sketch only includes <ungula_json.h>, the
 // transitive dependency on UngulaCore still gets discovered.
 
-#include <util/string_types.h>
+#include <ungula/core/util/string_types.h>
 
-#include "json/json.h"
-#include "json/json_types.h"
-#include "json/json_utils.h"
+#include "ungula/json/json.h"
+#include "ungula/json/json_types.h"
+#include "ungula/json/json_utils.h"

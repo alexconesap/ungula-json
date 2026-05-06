@@ -15,10 +15,10 @@ on `UngulaCore` for `string_t` / `string_view_t` and a few string helpers.
 
 ```cpp
 #include <json/json_utils.h>
-#include <util/string_types.h>
+#include <ungula/core/util/string_types.h>
 #include <cstring>
 
-using ungula::string_t;
+using ungula::core::util::string_t;
 using namespace ungula::json;
 
 void on_message(const char* buf, size_t n) {
@@ -37,9 +37,9 @@ two top-level fields. Constant memory; one allocation for the result.
 
 ```cpp
 #include <json/json_utils.h>
-#include <util/string_types.h>
+#include <ungula/core/util/string_types.h>
 
-using ungula::string_t;
+using ungula::core::util::string_t;
 using namespace ungula::json;
 
 void handle(const string_t& json) {
@@ -57,9 +57,9 @@ linear scan and don't care that nested duplicates collapse to the first.
 
 ```cpp
 #include <json/json.h>
-#include <util/string_types.h>
+#include <ungula/core/util/string_types.h>
 
-using ungula::string_t;
+using ungula::core::util::string_t;
 using namespace ungula::json;
 
 void parse_settings(const char* payload) {
@@ -80,9 +80,9 @@ nested access via dotted paths.
 
 ```cpp
 #include <json/json.h>
-#include <util/string_types.h>
+#include <ungula/core/util/string_types.h>
 
-using ungula::string_t;
+using ungula::core::util::string_t;
 using namespace ungula::json;
 
 struct Settings {
@@ -133,9 +133,9 @@ void slice(const JsonWrapper& main_doc) {
 ```cpp
 #include <json/json_types.h>
 #include <json/json_utils.h>
-#include <util/string_types.h>
+#include <ungula/core/util/string_types.h>
 
-using ungula::string_t;
+using ungula::core::util::string_t;
 using namespace ungula::json;
 
 string_t make_reply(const string_t& action) {
@@ -336,8 +336,8 @@ void    serializeJson(const JsonObject& json, JsonStr& out);  // out is cleared 
 ```
 
 Always emits valid JSON (strings quoted, escapes applied via
-`ungula::str::escapeString`). Numbers go through
-`ungula::str::num_to_string`.
+`ungula::core::util::str::escapeString`). Numbers go through
+`ungula::core::util::str::num_to_string`.
 
 ### Single-key extractors — raw buffer (no parse tree)
 
@@ -407,7 +407,7 @@ new keys are appended (preserves order).
 
 Code inside `namespace ungula::json` reaches `string_t`,
 `str::escapeString`, etc. via parent-namespace lookup. Code outside the
-namespace must qualify (`ungula::string_t`, `ungula::str::...`).
+namespace must qualify (`ungula::core::util::string_t`, `ungula::core::util::str::...`).
 
 ---
 
@@ -471,7 +471,7 @@ from firmware.
   through `has`, `getXxx`, `keyToXxxVar`.
 - `Json::findImpl` — backing both `find` overloads.
 - `JsonStr` / `JsonStrView` — internal aliases for `string_t` /
-  `string_view_t`. Use `ungula::string_t` directly in caller code.
+  `string_view_t`. Use `ungula::core::util::string_t` directly in caller code.
 - `Json::Type::Null` ordinal layout — assume the enum exists, do not
   rely on numeric values.
 

@@ -15,9 +15,9 @@
 #include <ungula/core/util/string_utils.h>
 
 namespace ungula::json {
-using ungula::core::util::string_t;
-using ungula::core::util::string_view_t;
-namespace str = ungula::core::util::str;
+    using ungula::core::util::string_t;
+    using ungula::core::util::string_view_t;
+    namespace str = ungula::core::util::str;
 
     // -----------------------------------------------------------------------
     // JsonWrapper — slicing constructor (sub-document by key)
@@ -195,8 +195,7 @@ namespace str = ungula::core::util::str;
 
                 switch (type) {
                     case Json::Type::String:
-                        keyValueMap_.emplace_back(keyBuffer,
-                                                  Json(string_t(valueBuffer, valueLen)));
+                        keyValueMap_.emplace_back(keyBuffer, Json(string_t(valueBuffer, valueLen)));
                         break;
                     case Json::Type::Int:
                         keyValueMap_.emplace_back(keyBuffer, Json(std::atoi(valueBuffer)));
@@ -218,8 +217,8 @@ namespace str = ungula::core::util::str;
                         keyValueMap_.emplace_back(keyBuffer, Json(dval));
                         break;
                     case Json::Type::Bool:
-                        keyValueMap_.emplace_back(keyBuffer, Json(valueBuffer[0] == 't' ||
-                                                                  valueBuffer[0] == 'T'));
+                        keyValueMap_.emplace_back(
+                                keyBuffer, Json(valueBuffer[0] == 't' || valueBuffer[0] == 'T'));
                         break;
                     case Json::Type::Null:
                         keyValueMap_.emplace_back(keyBuffer, Json(nullptr));
@@ -251,8 +250,7 @@ namespace str = ungula::core::util::str;
     // backslash is passed through verbatim.
     // -----------------------------------------------------------------------
 
-    const char* JsonWrapper::parseStringDirect(const char* p, char* buffer,
-                                               size_t* outLen) const {
+    const char* JsonWrapper::parseStringDirect(const char* p, char* buffer, size_t* outLen) const {
         *outLen = 0;
         if (*p != '"') {
             return nullptr;
@@ -331,8 +329,7 @@ namespace str = ungula::core::util::str;
         if (!nonNumberFound) {
             // Use Double for floating-point — see comment above.
             type = dotFound ? Json::Type::Double : Json::Type::Int;
-        } else if (std::strncmp(buffer, "true", 4) == 0 ||
-                   std::strncmp(buffer, "false", 5) == 0) {
+        } else if (std::strncmp(buffer, "true", 4) == 0 || std::strncmp(buffer, "false", 5) == 0) {
             type = Json::Type::Bool;
         } else {
             type = Json::Type::Null;
@@ -593,8 +590,7 @@ namespace str = ungula::core::util::str;
         JsonWrapper parser(json_string);
         return parser.keyToIntVar(key, dest, ignoreValue);
     }
-    bool jsonKeyToIntVar(const JsonStr& json_string, const char* key, int& dest,
-                         int ignoreValue) {
+    bool jsonKeyToIntVar(const JsonStr& json_string, const char* key, int& dest, int ignoreValue) {
         return jsonKeyToIntVar(json_string.c_str(), key, dest, ignoreValue);
     }
     bool jsonKeyToIntVar(JsonStrView json_string, const char* key, int& dest, int ignoreValue) {

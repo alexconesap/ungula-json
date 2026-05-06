@@ -34,9 +34,9 @@
 #include "json_types.h"
 
 namespace ungula::json {
-using ungula::core::util::string_t;
-using ungula::core::util::string_view_t;
-namespace str = ungula::core::util::str;
+    using ungula::core::util::string_t;
+    using ungula::core::util::string_view_t;
+    namespace str = ungula::core::util::str;
 
     // ---- Free-function single-key extractors --------------------------------
     //
@@ -210,8 +210,7 @@ namespace str = ungula::core::util::str;
 
             // Recursive object parser. Returns the pointer just after the
             // closing brace `}`, or nullptr on parse failure.
-            const char* parseObject(const char* p, char* keyBuffer, size_t bufferOffset,
-                                    int depth);
+            const char* parseObject(const char* p, char* keyBuffer, size_t bufferOffset, int depth);
 
             // String value parser — handles escape sequences (\n \t \r \\ \").
             const char* parseStringDirect(const char* p, char* buffer, size_t* outLen) const;

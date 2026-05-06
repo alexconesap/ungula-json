@@ -11,9 +11,9 @@
 #include "ungula/json/json_types.h"
 
 namespace ungula::json {
-using ungula::core::util::string_t;
-using ungula::core::util::string_view_t;
-namespace str = ungula::core::util::str;
+    using ungula::core::util::string_t;
+    using ungula::core::util::string_view_t;
+    namespace str = ungula::core::util::str;
 
     // ---- Direct single-key extraction ---------------------------------------
     //

@@ -33,9 +33,9 @@
 #include <ungula/core/util/string_utils.h>
 
 namespace ungula::json {
-using ungula::core::util::string_t;
-using ungula::core::util::string_view_t;
-namespace str = ungula::core::util::str;
+    using ungula::core::util::string_t;
+    using ungula::core::util::string_view_t;
+    namespace str = ungula::core::util::str;
 
     using JsonStr = string_t;
     using JsonStrView = string_view_t;
@@ -60,8 +60,8 @@ namespace str = ungula::core::util::str;
     /// };
     /// ```
     struct Json {
-            using JsonValue = std::variant<std::monostate, string_t, int, float, double, bool,
-                                           JsonObject>;
+            using JsonValue =
+                    std::variant<std::monostate, string_t, int, float, double, bool, JsonObject>;
 
             JsonValue value;
 

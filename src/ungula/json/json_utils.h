@@ -27,9 +27,9 @@
 #include "json_types.h"
 
 namespace ungula::json {
-using ungula::core::util::string_t;
-using ungula::core::util::string_view_t;
-namespace str = ungula::core::util::str;
+    using ungula::core::util::string_t;
+    using ungula::core::util::string_view_t;
+    namespace str = ungula::core::util::str;
 
     /// @brief Serialize a JsonObject into a freshly allocated string.
     JsonStr serializeJson(const JsonObject& json);
@@ -70,8 +70,7 @@ namespace str = ungula::core::util::str;
     /// @param json                 The JSON text to scan.
     /// @param key                  The leaf key (no dots).
     /// @param expected_len_result  Hint for the destination string capacity.
-    string_t jsonExtractAsStr(const string_t& json, const char* key,
-                              int expected_len_result = 128);
+    string_t jsonExtractAsStr(const string_t& json, const char* key, int expected_len_result = 128);
 
     /// @brief Extract an integer value from a JSON document by simple key.
     /// @return The parsed int, or 0 if the key isn't found / not numeric.

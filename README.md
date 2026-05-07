@@ -77,6 +77,8 @@ a nested `JsonObject`. Implicit constructors mean you can write the natural
 literal:
 
 ```cpp
+#include <ungula/json.h>
+
 Json a = nullptr;
 Json b = "hello";
 Json c = 42;
@@ -88,6 +90,8 @@ Json f = JsonObject{{"x", 1}, {"y", 2}};
 Type checks and accessors:
 
 ```cpp
+#include <ungula/json.h>
+
 Json v = 42;
 
 v.isInt();           // true
@@ -99,6 +103,8 @@ v.asString();        // std::nullopt — wrong type
 Walk into nested values with dotted paths:
 
 ```cpp
+#include <ungula/json.h>
+
 JsonObject obj = {
     {"payload", JsonObject{
         {"settings", JsonObject{
@@ -126,6 +132,8 @@ the consumer of the resulting JSON expects fields in a particular order
 You build it directly with brace init or with the `putTojson` helper:
 
 ```cpp
+#include <ungula/json.h>
+
 // Brace init
 JsonObject person = {
     {"name",    "Alice"},
@@ -144,6 +152,8 @@ putTojson(settings, "type",    "jpeg");
 Combine and serialize:
 
 ```cpp
+#include <ungula/json.h>
+
 JsonObject message;
 putTojson(message, "action",   "shot");
 putTojson(message, "settings", settings);
@@ -159,6 +169,8 @@ map keyed by the **dotted path**. After construction the wrapper is
 read-only and every lookup is one string compare per slot.
 
 ```cpp
+#include <ungula/json.h>
+
 JsonWrapper doc(R"({"a":1,"payload":{"settings":{"roi":"xx","q":100}}})");
 
 doc.isValidJson();                  // true
@@ -174,6 +186,8 @@ doc.getBool("payload.settings.q");  // true (non-zero)
 Pass a depth limit to refuse pathologically nested input:
 
 ```cpp
+#include <ungula/json.h>
+
 JsonWrapper shallow(R"({"a":{"b":{"c":{"d":{"e":1}}}}})", /*levels=*/3);
 shallow.isValidJson();    // true — the rest of the document still parses
 shallow.has("a.b.c");     // true
@@ -189,6 +203,8 @@ useful when you receive a big envelope and want to hand a small piece to
 another component:
 
 ```cpp
+#include <ungula/json.h>
+
 JsonWrapper main_doc(R"({"action":"x","payload":{"settings":{"roi":"xx","q":100}}})");
 
 // Keep original key paths
@@ -211,6 +227,8 @@ would actually change**. The return value tells the caller whether
 something changed — perfect for "settings dirty?" patterns:
 
 ```cpp
+#include <ungula/json.h>
+
 JsonWrapper doc(R"({"payload":{"intv":42,"floatv":3.14,"debug":true}})");
 
 bool   debug    = false;
@@ -238,6 +256,8 @@ assignment when the parsed value matches it.
 #### Reading sub-objects
 
 ```cpp
+#include <ungula/json.h>
+
 JsonWrapper doc(R"({"payload":{"settings":{"roi":"xx","q":100.2}}})");
 
 // As JSON text fragment
@@ -255,6 +275,8 @@ two values. They scan the raw text linearly, do not build a parse tree, and
 allocate exactly one string for the result.
 
 ```cpp
+#include <ungula/json.h>
+
 const char* buf = R"({"action":"capture","payload":{ ... lots of data ... }})";
 size_t      n   = std::strlen(buf);
 
@@ -267,6 +289,8 @@ If the value can be either quoted or unquoted, or lives anywhere in the
 document (first occurrence wins, dotted paths NOT supported here):
 
 ```cpp
+#include <ungula/json.h>
+
 string_t json = R"({"action":"x","payload":{"settings":{"q":100}}})";
 
 string_t roi = jsonExtractAsStr(json, "roi");      // ""
@@ -278,6 +302,8 @@ For one-shot extraction into a typed variable, the `jsonKeyToXxxVar` free
 functions wrap a transient `JsonWrapper`:
 
 ```cpp
+#include <ungula/json.h>
+
 string_t roi;
 int      quality = 0;
 
@@ -292,6 +318,8 @@ do not.
 ### Validity check
 
 ```cpp
+#include <ungula/json.h>
+
 isValidJson(R"({"a":1})");                   // true
 isValidJson(R"({"a":1)");                    // false (truncated)
 isValidJson(R"({"action": take_one_shot})"); // true (lenient — accepts unquoted token)

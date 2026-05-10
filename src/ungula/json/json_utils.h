@@ -26,18 +26,19 @@
 
 #include "json_types.h"
 
-namespace ungula::json {
+namespace ungula::json
+{
     using ungula::core::util::string_t;
     using ungula::core::util::string_view_t;
     namespace str = ungula::core::util::str;
 
     /// @brief Serialize a JsonObject into a freshly allocated string.
-    JsonStr serializeJson(const JsonObject& json);
+    JsonStr serializeJson(const JsonObject &json);
 
     /// @brief Serialize a JsonObject into the caller-provided buffer.
     /// @param json The JSON object to serialize.
     /// @param out  The destination string. Cleared before writing.
-    void serializeJson(const JsonObject& json, JsonStr& out);
+    void serializeJson(const JsonObject &json, JsonStr &out);
 
     /// @brief Extract the value of a top-level string key from a raw buffer
     ///        without parsing the entire document.
@@ -59,7 +60,7 @@ namespace ungula::json {
     /// @return The string value associated with the key, or an empty
     ///         string if the key isn't found, the value isn't a quoted
     ///         string, or the document is truncated.
-    string_t jsonExtractStringKey(const char* buf, size_t buf_len, const char* key);
+    string_t jsonExtractStringKey(const char *buf, size_t buf_len, const char *key);
 
     /// @brief Extract a value as string from a JSON document by simple key,
     ///        accepting both quoted and unquoted values.
@@ -70,30 +71,31 @@ namespace ungula::json {
     /// @param json                 The JSON text to scan.
     /// @param key                  The leaf key (no dots).
     /// @param expected_len_result  Hint for the destination string capacity.
-    string_t jsonExtractAsStr(const string_t& json, const char* key, int expected_len_result = 128);
+    string_t jsonExtractAsStr(const string_t &json, const char *key, int expected_len_result = 128);
 
     /// @brief Extract an integer value from a JSON document by simple key.
     /// @return The parsed int, or 0 if the key isn't found / not numeric.
-    int jsonExtractAsInt(const string_t& json, const char* key, int len_number = 8);
+    int jsonExtractAsInt(const string_t &json, const char *key, int len_number = 8);
 
     /// @brief Find a key in a JsonObject. Returns nullptr when missing.
-    inline Json* findInObject(JsonObject& obj, const string_t& key) {
-        auto it = std::find_if(obj.begin(), obj.end(),
-                               [&](auto const& kv) { return kv.first == key; });
+    inline Json *findInObject(JsonObject &obj, const string_t &key)
+    {
+        auto it = std::find_if(obj.begin(), obj.end(), [&](auto const &kv) { return kv.first == key; });
         return (it == obj.end() ? nullptr : &it->second);
     }
 
     /// @brief Const overload of `findInObject`.
-    inline const Json* findInObject(const JsonObject& obj, const string_t& key) {
-        auto it = std::find_if(obj.begin(), obj.end(),
-                               [&](auto const& kv) { return kv.first == key; });
+    inline const Json *findInObject(const JsonObject &obj, const string_t &key)
+    {
+        auto it = std::find_if(obj.begin(), obj.end(), [&](auto const &kv) { return kv.first == key; });
         return (it == obj.end() ? nullptr : &it->second);
     }
 
     /// @brief Update an existing key in a JsonObject.
     /// @return True if the key existed and was updated, false otherwise.
-    inline bool updateInObject(JsonObject& obj, const string_t& key, const Json& newValue) {
-        if (auto* p = findInObject(obj, key)) {
+    inline bool updateInObject(JsonObject &obj, const string_t &key, const Json &newValue)
+    {
+        if (auto *p = findInObject(obj, key)) {
             *p = newValue;
             return true;
         }
@@ -101,7 +103,8 @@ namespace ungula::json {
     }
 
     /// @brief Insert-or-update a key in a JsonObject. Order is preserved.
-    inline void putTojson(JsonObject& doc, const string_t& key, const Json& value) {
+    inline void putTojson(JsonObject &doc, const string_t &key, const Json &value)
+    {
         if (updateInObject(doc, key, value)) {
             return;
         }
@@ -109,11 +112,12 @@ namespace ungula::json {
     }
 
     /// @brief Insert-or-update a key whose value is itself an object.
-    inline void putTojson(JsonObject& doc, const string_t& key, const JsonObject& value) {
+    inline void putTojson(JsonObject &doc, const string_t &key, const JsonObject &value)
+    {
         if (updateInObject(doc, key, value)) {
             return;
         }
         doc.emplace_back(key, Json(value));
     }
 
-}  // namespace ungula::json
+} // namespace ungula::json

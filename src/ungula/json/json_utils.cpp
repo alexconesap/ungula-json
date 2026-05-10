@@ -10,7 +10,8 @@
 
 #include "ungula/json/json_types.h"
 
-namespace ungula::json {
+namespace ungula::json
+{
     using ungula::core::util::string_t;
     using ungula::core::util::string_view_t;
     namespace str = ungula::core::util::str;
@@ -22,7 +23,8 @@ namespace ungula::json {
     // `:` and a value, and return as soon as they find a match. The cost is
     // O(buf_len) memory-wise it's a single allocation for the result string.
 
-    string_t jsonExtractStringKey(const char* buf, size_t buf_len, const char* key) {
+    string_t jsonExtractStringKey(const char *buf, size_t buf_len, const char *key)
+    {
         size_t keyLen = 0;
         while (key[keyLen] != '\0') {
             ++keyLen;
@@ -66,14 +68,15 @@ namespace ungula::json {
                 ++j;
             }
             if (j >= buf_len) {
-                return {};  // unterminated string
+                return {}; // unterminated string
             }
             return string_t(buf + start, j - start);
         }
         return {};
     }
 
-    string_t jsonExtractAsStr(const string_t& json, const char* key, int expected_len_result) {
+    string_t jsonExtractAsStr(const string_t &json, const char *key, int expected_len_result)
+    {
         if (json.empty() || key == nullptr || *key == '\0') {
             return "";
         }
@@ -83,14 +86,13 @@ namespace ungula::json {
             return "";
         }
         if (p > 0 && json[p - 1] != '"') {
-            return "";  // key must be quoted
+            return ""; // key must be quoted
         }
 
         const int json_len = static_cast<int>(json.size());
 
-        p += std::strlen(key) + 1;  // skip the closing quote of the key
-        while (static_cast<int>(p) < json_len &&
-               std::isspace(static_cast<unsigned char>(json[p])) != 0) {
+        p += std::strlen(key) + 1; // skip the closing quote of the key
+        while (static_cast<int>(p) < json_len && std::isspace(static_cast<unsigned char>(json[p])) != 0) {
             ++p;
         }
         if (static_cast<int>(p) >= json_len) {
@@ -102,8 +104,7 @@ namespace ungula::json {
             return "";
         }
         ++p;
-        while (static_cast<int>(p) < json_len &&
-               std::isspace(static_cast<unsigned char>(json[p])) != 0) {
+        while (static_cast<int>(p) < json_len && std::isspace(static_cast<unsigned char>(json[p])) != 0) {
             ++p;
         }
         if (static_cast<int>(p) >= json_len) {
@@ -116,8 +117,7 @@ namespace ungula::json {
             is_quoted = true;
             ++p;
         } else {
-            while (static_cast<int>(p) < json_len &&
-                   std::isspace(static_cast<unsigned char>(json[p])) != 0) {
+            while (static_cast<int>(p) < json_len && std::isspace(static_cast<unsigned char>(json[p])) != 0) {
                 ++p;
             }
         }
@@ -130,11 +130,10 @@ namespace ungula::json {
         while (static_cast<int>(p) < json_len) {
             if (is_quoted) {
                 if (json[p] == '"') {
-                    break;  // end of quoted string
+                    break; // end of quoted string
                 }
             } else {
-                if (json[p] == ',' || json[p] == '}' ||
-                    std::isspace(static_cast<unsigned char>(json[p])) != 0) {
+                if (json[p] == ',' || json[p] == '}' || std::isspace(static_cast<unsigned char>(json[p])) != 0) {
                     break;
                 }
             }
@@ -143,25 +142,28 @@ namespace ungula::json {
         return value;
     }
 
-    int jsonExtractAsInt(const string_t& json, const char* key, int /*len_number*/) {
+    int jsonExtractAsInt(const string_t &json, const char *key, int /*len_number*/)
+    {
         return std::atoi(jsonExtractAsStr(json, key).c_str());
     }
 
     // ---- Serialization ------------------------------------------------------
 
-    JsonStr serializeJson(const JsonObject& json) {
+    JsonStr serializeJson(const JsonObject &json)
+    {
         JsonStr out;
         out.reserve(256);
         serializeJson(json, out);
         return out;
     }
 
-    void serializeJson(const JsonObject& json, JsonStr& out) {
+    void serializeJson(const JsonObject &json, JsonStr &out)
+    {
         out.clear();
         out.push_back('{');
 
         bool first = true;
-        for (const auto& [key, value] : json) {
+        for (const auto &[key, value] : json) {
             if (!first) {
                 out.push_back(',');
             }
@@ -172,10 +174,10 @@ namespace ungula::json {
             out.push_back('"');
             out.push_back(':');
 
-            out += value.serialize(true);  // quote string values
+            out += value.serialize(true); // quote string values
         }
 
         out.push_back('}');
     }
 
-}  // namespace ungula::json
+} // namespace ungula::json

@@ -14,7 +14,8 @@
 using namespace ungula::json;
 using ungula::core::util::string_t;
 
-TEST(JsonTest, EmptyJson) {
+TEST(JsonTest, EmptyJson)
+{
     string_t original_payload = "";
     JsonWrapper json = JsonWrapper(original_payload);
     EXPECT_TRUE(json.isEmpty());
@@ -43,7 +44,8 @@ TEST(JsonTest, EmptyJson) {
     EXPECT_TRUE(isValidJson(original_payload2));
 }
 
-TEST(JsonTest, IndividualKeys) {
+TEST(JsonTest, IndividualKeys)
+{
     const string_t original_payload = R"({"hello":"world","value":42})";
     JsonWrapper json = JsonWrapper(original_payload);
     EXPECT_TRUE(json.isValidJson());
@@ -63,7 +65,8 @@ TEST(JsonTest, IndividualKeys) {
     EXPECT_EQ(json.getBool("whatever.and.ever"), false);
 }
 
-TEST(JsonTest, JsonWithNormalPayload) {
+TEST(JsonTest, JsonWithNormalPayload)
+{
     const string_t original_payload = R"({"payload":{"hello":"world","value":42}})";
     JsonWrapper json = JsonWrapper(original_payload);
     EXPECT_TRUE(json.isValidJson());
@@ -74,7 +77,8 @@ TEST(JsonTest, JsonWithNormalPayload) {
     EXPECT_EQ(json.getInt("payload.value"), 42);
 }
 
-TEST(JsonTest, HasChecking) {
+TEST(JsonTest, HasChecking)
+{
     const string_t original_payload = R"({"payload":{"hello":"world","value":42}})";
     JsonWrapper json = JsonWrapper(original_payload);
     EXPECT_TRUE(json.isValidJson());
@@ -87,9 +91,9 @@ TEST(JsonTest, HasChecking) {
     EXPECT_FALSE(json.has("payload.XX"));
 }
 
-TEST(JsonTest, SetLevelsDeep) {
-    const string_t original_payload =
-            R"({"action":"take_one_shot","payload":{"settings":{"roi":"xx","quality":100}}})";
+TEST(JsonTest, SetLevelsDeep)
+{
+    const string_t original_payload = R"({"action":"take_one_shot","payload":{"settings":{"roi":"xx","quality":100}}})";
 
     JsonWrapper parser1 = JsonWrapper(original_payload);
     EXPECT_TRUE(parser1.isValidJson());
@@ -129,9 +133,9 @@ TEST(JsonTest, SetLevelsDeep) {
     EXPECT_EQ(parser4.getStr("payload.settings.roi"), "xx");
 }
 
-TEST(JsonTest, MalformedJsonPrettyDeep) {
-    JsonWrapper parser1 = JsonWrapper(
-            R"({action":"take_one_shot","payload":{"settings":{"roi":"xx","quality":100}}})");
+TEST(JsonTest, MalformedJsonPrettyDeep)
+{
+    JsonWrapper parser1 = JsonWrapper(R"({action":"take_one_shot","payload":{"settings":{"roi":"xx","quality":100}}})");
     EXPECT_FALSE(parser1.isValidJson());
     EXPECT_FALSE(parser1.has("payload"));
 
@@ -148,9 +152,10 @@ TEST(JsonTest, MalformedJsonPrettyDeep) {
     EXPECT_FALSE(parser4.has("payload"));
 }
 
-TEST(JsonTest, WhiteSpacedJsons) {
+TEST(JsonTest, WhiteSpacedJsons)
+{
     JsonWrapper parser1 = JsonWrapper(
-            R"({   "  action"  : "take_{one}_shot",   "payload"  :  {    "settings": { "roi": "xx","quality":100}  }  } )");
+        R"({   "  action"  : "take_{one}_shot",   "payload"  :  {    "settings": { "roi": "xx","quality":100}  }  } )");
     EXPECT_TRUE(parser1.isValidJson());
     EXPECT_TRUE(parser1.has("payload"));
 
@@ -163,33 +168,33 @@ TEST(JsonTest, WhiteSpacedJsons) {
     EXPECT_EQ(parser1.getStr("action"), "take_{one}_shot");
 }
 
-TEST(JsonTest, WeirdJsonThatMustBeParsed) {
-    JsonWrapper parser1 = JsonWrapper(
-            R"({"action":take_one_shot,"payload":{"settings":{"roi":"xx","quality":100}}})");
+TEST(JsonTest, WeirdJsonThatMustBeParsed)
+{
+    JsonWrapper parser1 = JsonWrapper(R"({"action":take_one_shot,"payload":{"settings":{"roi":"xx","quality":100}}})");
     EXPECT_TRUE(parser1.isValidJson());
     EXPECT_TRUE(parser1.has("payload"));
 
-    JsonWrapper parser2 =
-            JsonWrapper(R"({"action":@(0120),"payload":{"settings":{"roi":"xx","quality":100}}})");
+    JsonWrapper parser2 = JsonWrapper(R"({"action":@(0120),"payload":{"settings":{"roi":"xx","quality":100}}})");
     EXPECT_TRUE(parser2.isValidJson());
 
-    JsonWrapper parser3 =
-            JsonWrapper(R"({"action":,"payload":{"settings":{"roi":"xx","quality":100}}})");
+    JsonWrapper parser3 = JsonWrapper(R"({"action":,"payload":{"settings":{"roi":"xx","quality":100}}})");
     EXPECT_TRUE(parser3.isValidJson());
 }
 
-TEST(JsonTest, AvoidTooManyDepthLevels) {
+TEST(JsonTest, AvoidTooManyDepthLevels)
+{
     JsonWrapper parser1 = JsonWrapper(R"( {"a":"1", "b":{"c": {"d":{"e": {"f":1}   } } } })");
     EXPECT_TRUE(parser1.isValidJson());
     EXPECT_FALSE(parser1.has("payload"));
 
-    EXPECT_FALSE(parser1.has("b.c.d.e.f"));  // This should not be parsed due to depth limit
+    EXPECT_FALSE(parser1.has("b.c.d.e.f")); // This should not be parsed due to depth limit
     // parser1.printAll();
 }
 
-TEST(JsonTest, QuickValueExtractionByKeyChar) {
-    const char* buffer =
-            R"({  "action" : "take_one_shot"   ,  "payload" : {  "settings"   :{"roi":"xx","quality":100}}})";
+TEST(JsonTest, QuickValueExtractionByKeyChar)
+{
+    const char *buffer =
+        R"({  "action" : "take_one_shot"   ,  "payload" : {  "settings"   :{"roi":"xx","quality":100}}})";
     unsigned long len = strlen(buffer);
 
     string_t v = jsonExtractStringKey(buffer, len, "action");
@@ -208,7 +213,8 @@ TEST(JsonTest, QuickValueExtractionByKeyChar) {
     EXPECT_EQ(v, "");
 }
 
-TEST(JsonTest, SerializeJsonTest) {
+TEST(JsonTest, SerializeJsonTest)
+{
     JsonObject settings;
     putTojson(settings, "roi", "xx");
     putTojson(settings, "quality", 100);
@@ -221,14 +227,13 @@ TEST(JsonTest, SerializeJsonTest) {
 
     JsonStr message_to_str;
     serializeJson(message, message_to_str);
-    EXPECT_EQ(
-            message_to_str,
-            R"({"action":"shot","settings":{"roi":"xx","quality":100,"focus":"6.5","type":"jpeg"}})");
+    EXPECT_EQ(message_to_str, R"({"action":"shot","settings":{"roi":"xx","quality":100,"focus":"6.5","type":"jpeg"}})");
 }
 
-TEST(JsonTest, ExtractObject) {
+TEST(JsonTest, ExtractObject)
+{
     string_t original_json =
-            R"({"action":"take_one_shot","payload":{"settings":{"roi":"xx","quality":100.2,"a":1}, "other":{"a":1,"b":2}}})";
+        R"({"action":"take_one_shot","payload":{"settings":{"roi":"xx","quality":100.2,"a":1}, "other":{"a":1,"b":2}}})";
 
     JsonWrapper main_doc = JsonWrapper(original_json);
     EXPECT_TRUE(main_doc.isValidJson());
@@ -271,9 +276,9 @@ TEST(JsonTest, ExtractObject) {
     EXPECT_FLOAT_EQ(subdoc3.getFloat("payload.settings.quality"), 100.2f);
 }
 
-TEST(JsonTest, ReadObjectAsString) {
-    string_t original_json =
-            R"({"action":"take_one_shot","payload":{"settings":{"roi":"xx","quality":100}}})";
+TEST(JsonTest, ReadObjectAsString)
+{
+    string_t original_json = R"({"action":"take_one_shot","payload":{"settings":{"roi":"xx","quality":100}}})";
 
     JsonWrapper parser1 = JsonWrapper(original_json);
 
@@ -328,9 +333,10 @@ TEST(JsonTest, ReadObjectAsString) {
     EXPECT_EQ(im1, "1");
 }
 
-TEST(JsonTest, ReadObjectAsStringExtractFullKey) {
+TEST(JsonTest, ReadObjectAsStringExtractFullKey)
+{
     string_t original_json =
-            R"({"action":"take_one_shot","payload":{"settings":{"roi":"xx","quality":100.2,"a":1}, "other":{"a":1,"b":2}}})";
+        R"({"action":"take_one_shot","payload":{"settings":{"roi":"xx","quality":100.2,"a":1}, "other":{"a":1,"b":2}}})";
 
     JsonWrapper parser1 = JsonWrapper(original_json);
 
@@ -342,9 +348,9 @@ TEST(JsonTest, ReadObjectAsStringExtractFullKey) {
     EXPECT_EQ(settings, R"({"roi":"xx","quality":100.200000,"a":1})");
 }
 
-TEST(JsonTest, JsonInjectingPayloadValues) {
-    const string_t original_payload =
-            R"({"payload":{"hello":"world","intv":42,"floatv":3.14,"debug":true}})";
+TEST(JsonTest, JsonInjectingPayloadValues)
+{
+    const string_t original_payload = R"({"payload":{"hello":"world","intv":42,"floatv":3.14,"debug":true}})";
     JsonWrapper json = JsonWrapper(original_payload);
     EXPECT_TRUE(json.isValidJson());
 
@@ -372,7 +378,8 @@ TEST(JsonTest, JsonInjectingPayloadValues) {
     EXPECT_FALSE(driverChanges);
 }
 
-TEST(JsonTest, SerializeJsonSubObjectUsingJsonDoc) {
+TEST(JsonTest, SerializeJsonSubObjectUsingJsonDoc)
+{
     JsonObject settings;
     putTojson(settings, "roi", "xx");
     putTojson(settings, "quality", 100);
@@ -385,14 +392,12 @@ TEST(JsonTest, SerializeJsonSubObjectUsingJsonDoc) {
 
     JsonStr message_to_str;
     serializeJson(mesg, message_to_str);
-    EXPECT_EQ(
-            message_to_str,
-            R"({"action":"shot","settings":{"roi":"xx","quality":100,"focus":"6.5","type":"jpeg"}})");
+    EXPECT_EQ(message_to_str, R"({"action":"shot","settings":{"roi":"xx","quality":100,"focus":"6.5","type":"jpeg"}})");
 }
 
-TEST(JsonTest, SerializeJsonSubObjectUsingJsonWrapper) {
-    string_t payload =
-            R"({"action":"shot","settings":{"roi":"xx","quality":100,"focus":"6.5","type":"jpeg"}})";
+TEST(JsonTest, SerializeJsonSubObjectUsingJsonWrapper)
+{
+    string_t payload = R"({"action":"shot","settings":{"roi":"xx","quality":100,"focus":"6.5","type":"jpeg"}})";
 
     JsonWrapper parser1 = JsonWrapper(payload);
     EXPECT_TRUE(parser1.isValidJson());
@@ -416,8 +421,8 @@ TEST(JsonTest, SerializeJsonSubObjectUsingJsonWrapper) {
 
     // Emulate the MQTT message serialization
     struct FakeCameraCaptureSettings {
-            uint8_t count_lens_positions;
-            JsonObject json_settings_payload;
+        uint8_t count_lens_positions;
+        JsonObject json_settings_payload;
     };
     FakeCameraCaptureSettings sett;
     // Inject the settings into the fake camera capture settings
@@ -428,18 +433,19 @@ TEST(JsonTest, SerializeJsonSubObjectUsingJsonWrapper) {
     float xh = 1.2f;
     float yv = 3.4f;
     // MQTT message
-    JsonObject message = {{"action", "preview"}, {"camera", "all"}, {"x", xh}, {"y", yv}};
+    JsonObject message = { { "action", "preview" }, { "camera", "all" }, { "x", xh }, { "y", yv } };
     putTojson(message, "settings", sett.json_settings_payload);
 
     // Serialize the message
     string_t out;
     serializeJson(message, out);
     EXPECT_EQ(
-            out,
-            R"({"action":"preview","camera":"all","x":1.200000,"y":3.400000,"settings":{"roi":"xx","quality":100,"focus":"6.5","type":"jpeg"}})");
+        out,
+        R"({"action":"preview","camera":"all","x":1.200000,"y":3.400000,"settings":{"roi":"xx","quality":100,"focus":"6.5","type":"jpeg"}})");
 }
 
-TEST(JsonTest, IndividualJsonObjectsSerialization) {
+TEST(JsonTest, IndividualJsonObjectsSerialization)
+{
     Json roi = "xx";
     Json quality = 100;
     Json focus = "6.5";
@@ -455,9 +461,9 @@ TEST(JsonTest, IndividualJsonObjectsSerialization) {
     EXPECT_EQ(type.serialize(true), "\"jpeg\"");
 }
 
-TEST(JsonTest, InjectingValuesFromJsonToVars) {
-    string_t json =
-            R"({"action":"take_one_shot","payload":{"settings":{"roi":"xx","quality":100}}})";
+TEST(JsonTest, InjectingValuesFromJsonToVars)
+{
+    string_t json = R"({"action":"take_one_shot","payload":{"settings":{"roi":"xx","quality":100}}})";
     JsonWrapper parser1 = JsonWrapper(json);
     EXPECT_TRUE(parser1.isValidJson());
 
@@ -478,20 +484,21 @@ TEST(JsonTest, InjectingValuesFromJsonToVars) {
     EXPECT_EQ(quality, 100);
 }
 
-void test_payload(float xh, float yv, const string_t& status, JsonStr& out,
-                  const char* error_code = nullptr, const string_t* msg = nullptr) {
-    const char* const DEVICE_HOSTNAME = "ESP32 I";
+void test_payload(float xh, float yv, const string_t &status, JsonStr &out, const char *error_code = nullptr,
+                  const string_t *msg = nullptr)
+{
+    const char *const DEVICE_HOSTNAME = "ESP32 I";
 
     // Name communicated to the MQTT server for this device (ESP32)
-    const char* const DEVICE_ID = "rig";
-    const char* const DEVICE_TYPE = "rig";
-    const char* MQTT_STATUS_TYPE_STATUS = "status";
-    const char* MQTT_STATUS_TYPE_LOG = "log";
-    const char* MQTT_STATUS_TYPE_OPERATION = "operation";
+    const char *const DEVICE_ID = "rig";
+    const char *const DEVICE_TYPE = "rig";
+    const char *MQTT_STATUS_TYPE_STATUS = "status";
+    const char *MQTT_STATUS_TYPE_LOG = "log";
+    const char *MQTT_STATUS_TYPE_OPERATION = "operation";
 
-    const char* DEVICE_STATUS_DISCONNECTED = "disconnected";
-    const char* DEVICE_STATUS_READY = "idle";
-    const char* const VERSION = "1.1.27";
+    const char *DEVICE_STATUS_DISCONNECTED = "disconnected";
+    const char *DEVICE_STATUS_READY = "idle";
+    const char *const VERSION = "1.1.27";
 
     string_t IP = "192.168.1.11";
 
@@ -518,29 +525,30 @@ void test_payload(float xh, float yv, const string_t& status, JsonStr& out,
     serializeJson(message, out);
 }
 
-TEST(JsonTest, EscapeJsonString) {
+TEST(JsonTest, EscapeJsonString)
+{
     string_t message = "Whatever message";
 
     JsonStr buffer;
     test_payload(1.2, 3.4, "ready", buffer, nullptr, &message);
-    EXPECT_TRUE(
-            true);  // Assuming the function works correctly, we just check if it compiles and runs
+    EXPECT_TRUE(true); // Assuming the function works correctly, we just check if it compiles and runs
     // ulog("------------------------------------------------------------------------------------------");
     // ulog(buffer.c_str());
     // ulog("------------------------------------------------------------------------------------------");
     EXPECT_EQ(
-            buffer,
-            R"({"id":"rig","type":"rig","status":"ready","status_type":"operation","ip":"192.168.1.11","hostname":"ESP32 I","ts":1700000000.000000,"version":"1.1.27","error":null,"message":"Whatever message"})");
+        buffer,
+        R"({"id":"rig","type":"rig","status":"ready","status_type":"operation","ip":"192.168.1.11","hostname":"ESP32 I","ts":1700000000.000000,"version":"1.1.27","error":null,"message":"Whatever message"})");
 }
 
-TEST(JsonTest, EscapeJsonStringWithSpecialChars) {
+TEST(JsonTest, EscapeJsonStringWithSpecialChars)
+{
     JsonObject message = {
-            {"id", "rig"},                 //
-            {"type", "rig"},               //
-            {"error", "Nothing"},          // Keep the error here
-            {"status", "ready"},           //
-            {"status_type", "operation"},  //
-            {"message", nullptr}           // Keep the message here
+        { "id", "rig" }, //
+        { "type", "rig" }, //
+        { "error", "Nothing" }, // Keep the error here
+        { "status", "ready" }, //
+        { "status_type", "operation" }, //
+        { "message", nullptr } // Keep the message here
     };
 
     putTojson(message, "error", "Example of error");
@@ -549,23 +557,23 @@ TEST(JsonTest, EscapeJsonStringWithSpecialChars) {
 
     JsonStr out;
     serializeJson(message, out);
-    EXPECT_TRUE(
-            true);  // Assuming the function works correctly, we just check if it compiles and runs
+    EXPECT_TRUE(true); // Assuming the function works correctly, we just check if it compiles and runs
 
     // ulog("------------------------------------------------------------------------------------------");
     // ulog(out.c_str());
     // ulog("------------------------------------------------------------------------------------------");
 
     EXPECT_EQ(
-            out,
-            R"({"id":"0001","type":"rig","error":"Example of error","status":"ready","status_type":"operation","message":"Now it have a message"})");
+        out,
+        R"({"id":"0001","type":"rig","error":"Example of error","status":"ready","status_type":"operation","message":"Now it have a message"})");
 }
 
-TEST(JsonTest, TestSubJsonAsParameter) {
+TEST(JsonTest, TestSubJsonAsParameter)
+{
     float yv = 2.23;
     JsonObject message = {
-            {"version", "1.0"},                             // just a key
-            {"message", Json({{"xh", 1.12f}, {"yv", yv}})}  // Using Json object for xh and yv
+        { "version", "1.0" }, // just a key
+        { "message", Json({ { "xh", 1.12f }, { "yv", yv } }) } // Using Json object for xh and yv
     };
 
     string_t out;
@@ -574,17 +582,18 @@ TEST(JsonTest, TestSubJsonAsParameter) {
     EXPECT_EQ(out, R"({"version":"1.0","message":{"xh":1.120000,"yv":2.230000}})");
 }
 
-TEST(JsonTest, TestPuttingValuesToExistingStruct) {
+TEST(JsonTest, TestPuttingValuesToExistingStruct)
+{
     struct CameraCaptureSettings {
-            uint8_t count_lens_positions;
-            JsonObject json_settings_payload;
+        uint8_t count_lens_positions;
+        JsonObject json_settings_payload;
     };
 
     CameraCaptureSettings global_shot_settings = {
-            //
-            .count_lens_positions = 1,
-            .json_settings_payload = {}
-            //
+        //
+        .count_lens_positions = 1,
+        .json_settings_payload = {}
+        //
     };
 
     putTojson(global_shot_settings.json_settings_payload, "lens_position", "4,5,6");

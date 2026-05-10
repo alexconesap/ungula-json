@@ -14,7 +14,8 @@
 
 #include <ungula/core/util/string_utils.h>
 
-namespace ungula::json {
+namespace ungula::json
+{
     using ungula::core::util::string_t;
     using ungula::core::util::string_view_t;
     namespace str = ungula::core::util::str;
@@ -23,12 +24,13 @@ namespace ungula::json {
     // JsonWrapper — slicing constructor (sub-document by key)
     // -----------------------------------------------------------------------
 
-    JsonWrapper::JsonWrapper(const JsonWrapper& json, const char* key, const char* new_root) {
+    JsonWrapper::JsonWrapper(const JsonWrapper &json, const char *key, const char *new_root)
+    {
         if (!json.isValidJson() || !json.has(key)) {
-            return;  // invalid source or missing key — leave wrapper empty
+            return; // invalid source or missing key — leave wrapper empty
         }
 
-        const auto& source = json.keyValueMap_;
+        const auto &source = json.keyValueMap_;
 
         if (new_root != nullptr) {
             // Build the source-prefix and the rename-prefix, both with a
@@ -41,7 +43,7 @@ namespace ungula::json {
                 new_root_dotted.push_back('.');
             }
 
-            for (const auto& [full_key, value] : source) {
+            for (const auto &[full_key, value] : source) {
                 if (full_key != key && str::startsWith(full_key, key)) {
                     string_t current_key = full_key;
                     str::replaceAll(current_key, key_dotted, new_root_dotted);
@@ -50,7 +52,7 @@ namespace ungula::json {
             }
         } else {
             // No renaming — keep the original full keys.
-            for (const auto& [full_key, value] : source) {
+            for (const auto &[full_key, value] : source) {
                 if (full_key != key && str::startsWith(full_key, key)) {
                     keyValueMap_.emplace_back(full_key, value);
                 }
@@ -61,7 +63,8 @@ namespace ungula::json {
         isEmpty_ = keyValueMap_.empty();
     }
 
-    JsonWrapper::JsonWrapper(const json_map_t& json_map) {
+    JsonWrapper::JsonWrapper(const json_map_t &json_map)
+    {
         keyValueMap_ = json_map;
         validJson_ = !keyValueMap_.empty();
         isEmpty_ = keyValueMap_.empty();
@@ -71,7 +74,8 @@ namespace ungula::json {
     // Parser entry point
     // -----------------------------------------------------------------------
 
-    void JsonWrapper::parseJson(const char* jsonStr, uint8_t levels) {
+    void JsonWrapper::parseJson(const char *jsonStr, uint8_t levels)
+    {
         keyValueMap_.clear();
         max_parseLevels_ = levels;
         validJson_ = false;
@@ -81,7 +85,7 @@ namespace ungula::json {
             return;
         }
 
-        const char* p = str::skipWhitespace(jsonStr);
+        const char *p = str::skipWhitespace(jsonStr);
         if (*p == '\0') {
             return;
         }
@@ -90,7 +94,7 @@ namespace ungula::json {
         // objects but avoids most of the per-key reallocations.
         keyValueMap_.reserve(str::countChar(string_t(jsonStr), ':'));
 
-        char keyBuffer[512];  // upper bound on dotted-key length
+        char keyBuffer[512]; // upper bound on dotted-key length
         p = parseObject(p, keyBuffer, 0, 0);
         if (p != nullptr) {
             p = str::skipWhitespace(p);
@@ -108,8 +112,8 @@ namespace ungula::json {
     // built so leaf keys can be stored as full paths.
     // -----------------------------------------------------------------------
 
-    const char* JsonWrapper::parseObject(const char* p, char* keyBuffer, size_t bufferOffset,
-                                         int depth) {
+    const char *JsonWrapper::parseObject(const char *p, char *keyBuffer, size_t bufferOffset, int depth)
+    {
         if (depth >= maxParseLevels()) {
             // Past the depth cap — fast-forward to the matching closing brace.
             ++p;
@@ -129,7 +133,7 @@ namespace ungula::json {
         if (*p != '{') {
             return nullptr;
         }
-        ++p;  // consume '{'
+        ++p; // consume '{'
 
         // Record an entry for the parent intermediate key (so callers can
         // probe `has("payload.settings")` even though it has no leaf value).
@@ -140,10 +144,10 @@ namespace ungula::json {
 
         p = str::skipWhitespace(p);
         if (*p == '}') {
-            return p + 1;  // empty object
+            return p + 1; // empty object
         }
 
-        char* end = nullptr;
+        char *end = nullptr;
         float fval = 0.0f;
         double dval = 0.0;
         while (*p != '\0' && *p != '}') {
@@ -194,37 +198,36 @@ namespace ungula::json {
                 valueBuffer[valueLen] = '\0';
 
                 switch (type) {
-                    case Json::Type::String:
-                        keyValueMap_.emplace_back(keyBuffer, Json(string_t(valueBuffer, valueLen)));
-                        break;
-                    case Json::Type::Int:
-                        keyValueMap_.emplace_back(keyBuffer, Json(std::atoi(valueBuffer)));
-                        break;
-                    case Json::Type::Float:
-                        end = nullptr;
-                        fval = std::strtof(valueBuffer, &end);
-                        if (end == valueBuffer) {
-                            fval = std::numeric_limits<float>::quiet_NaN();
-                        }
-                        keyValueMap_.emplace_back(keyBuffer, Json(fval));
-                        break;
-                    case Json::Type::Double:
-                        end = nullptr;
-                        dval = std::strtod(valueBuffer, &end);
-                        if (end == valueBuffer) {
-                            dval = std::numeric_limits<double>::quiet_NaN();
-                        }
-                        keyValueMap_.emplace_back(keyBuffer, Json(dval));
-                        break;
-                    case Json::Type::Bool:
-                        keyValueMap_.emplace_back(
-                                keyBuffer, Json(valueBuffer[0] == 't' || valueBuffer[0] == 'T'));
-                        break;
-                    case Json::Type::Null:
-                        keyValueMap_.emplace_back(keyBuffer, Json(nullptr));
-                        break;
-                    default:
-                        return nullptr;  // unsupported type
+                case Json::Type::String:
+                    keyValueMap_.emplace_back(keyBuffer, Json(string_t(valueBuffer, valueLen)));
+                    break;
+                case Json::Type::Int:
+                    keyValueMap_.emplace_back(keyBuffer, Json(std::atoi(valueBuffer)));
+                    break;
+                case Json::Type::Float:
+                    end = nullptr;
+                    fval = std::strtof(valueBuffer, &end);
+                    if (end == valueBuffer) {
+                        fval = std::numeric_limits<float>::quiet_NaN();
+                    }
+                    keyValueMap_.emplace_back(keyBuffer, Json(fval));
+                    break;
+                case Json::Type::Double:
+                    end = nullptr;
+                    dval = std::strtod(valueBuffer, &end);
+                    if (end == valueBuffer) {
+                        dval = std::numeric_limits<double>::quiet_NaN();
+                    }
+                    keyValueMap_.emplace_back(keyBuffer, Json(dval));
+                    break;
+                case Json::Type::Bool:
+                    keyValueMap_.emplace_back(keyBuffer, Json(valueBuffer[0] == 't' || valueBuffer[0] == 'T'));
+                    break;
+                case Json::Type::Null:
+                    keyValueMap_.emplace_back(keyBuffer, Json(nullptr));
+                    break;
+                default:
+                    return nullptr; // unsupported type
                 }
             }
 
@@ -242,7 +245,7 @@ namespace ungula::json {
         if (*p != '}') {
             return nullptr;
         }
-        return p + 1;  // consume '}'
+        return p + 1; // consume '}'
     }
 
     // -----------------------------------------------------------------------
@@ -250,35 +253,36 @@ namespace ungula::json {
     // backslash is passed through verbatim.
     // -----------------------------------------------------------------------
 
-    const char* JsonWrapper::parseStringDirect(const char* p, char* buffer, size_t* outLen) const {
+    const char *JsonWrapper::parseStringDirect(const char *p, char *buffer, size_t *outLen) const
+    {
         *outLen = 0;
         if (*p != '"') {
             return nullptr;
         }
-        ++p;  // skip opening quote
+        ++p; // skip opening quote
 
         while (*p != '\0' && *p != '"') {
             if (*p == '\\' && *(p + 1) != '\0') {
                 ++p;
                 switch (*p) {
-                    case 'n':
-                        buffer[(*outLen)++] = '\n';
-                        break;
-                    case 't':
-                        buffer[(*outLen)++] = '\t';
-                        break;
-                    case 'r':
-                        buffer[(*outLen)++] = '\r';
-                        break;
-                    case '\\':
-                        buffer[(*outLen)++] = '\\';
-                        break;
-                    case '"':
-                        buffer[(*outLen)++] = '"';
-                        break;
-                    default:
-                        buffer[(*outLen)++] = *p;
-                        break;
+                case 'n':
+                    buffer[(*outLen)++] = '\n';
+                    break;
+                case 't':
+                    buffer[(*outLen)++] = '\t';
+                    break;
+                case 'r':
+                    buffer[(*outLen)++] = '\r';
+                    break;
+                case '\\':
+                    buffer[(*outLen)++] = '\\';
+                    break;
+                case '"':
+                    buffer[(*outLen)++] = '"';
+                    break;
+                default:
+                    buffer[(*outLen)++] = *p;
+                    break;
                 }
             } else {
                 buffer[(*outLen)++] = *p;
@@ -287,9 +291,9 @@ namespace ungula::json {
         }
 
         if (*p != '"') {
-            return nullptr;  // unterminated string
+            return nullptr; // unterminated string
         }
-        return p + 1;  // consume closing quote
+        return p + 1; // consume closing quote
     }
 
     // -----------------------------------------------------------------------
@@ -298,8 +302,8 @@ namespace ungula::json {
     // precision on common decimal literals like 1.1 -> 1.0999... .
     // -----------------------------------------------------------------------
 
-    const char* JsonWrapper::parseValueDirect(const char* p, char* buffer, size_t* outLen,
-                                              Json::Type& type) const {
+    const char *JsonWrapper::parseValueDirect(const char *p, char *buffer, size_t *outLen, Json::Type &type) const
+    {
         *outLen = 0;
         p = str::skipWhitespace(p);
 
@@ -311,8 +315,7 @@ namespace ungula::json {
         // Number / bool / null — read until the next separator.
         bool dotFound = false;
         bool nonNumberFound = false;
-        while (*p != '\0' && *p != ',' && *p != '}' && *p != ']' &&
-               std::isspace(static_cast<unsigned char>(*p)) == 0) {
+        while (*p != '\0' && *p != ',' && *p != '}' && *p != ']' && std::isspace(static_cast<unsigned char>(*p)) == 0) {
             if (*p == '.') {
                 dotFound = true;
             } else if (std::isdigit(static_cast<unsigned char>(*p)) == 0 && *p != '-') {
@@ -346,8 +349,9 @@ namespace ungula::json {
     // prefix from each entry's name.
     // -----------------------------------------------------------------------
 
-    string_t JsonWrapper::getObjectAsStr(const char* key) const {
-        string_t prefix{key};
+    string_t JsonWrapper::getObjectAsStr(const char *key) const
+    {
+        string_t prefix{ key };
         prefix.push_back('.');
         const size_t prefixLen = prefix.size();
 
@@ -356,7 +360,7 @@ namespace ungula::json {
         out.push_back('{');
 
         bool first = true;
-        for (const auto& [full_key, value] : keyValueMap_) {
+        for (const auto &[full_key, value] : keyValueMap_) {
             if (!str::startsWith(full_key, prefix)) {
                 continue;
             }
@@ -372,14 +376,15 @@ namespace ungula::json {
             out.push_back('"');
             out.push_back(':');
 
-            out += value.serialize(true);  // quote string values
+            out += value.serialize(true); // quote string values
         }
         out.push_back('}');
         return out;
     }
 
-    JsonObject JsonWrapper::getObject(const char* key) const {
-        const auto* it = find(key);
+    JsonObject JsonWrapper::getObject(const char *key) const
+    {
+        const auto *it = find(key);
         if (it == nullptr) {
             return {};
         }
@@ -387,12 +392,12 @@ namespace ungula::json {
             return it->asObject().value();
         }
 
-        string_t prefix{key};
+        string_t prefix{ key };
         prefix.push_back('.');
         const size_t prefixLen = prefix.size();
 
         JsonObject out;
-        for (const auto& [k, value] : keyValueMap_) {
+        for (const auto &[k, value] : keyValueMap_) {
             if (!str::startsWith(k, prefix)) {
                 continue;
             }
@@ -405,8 +410,9 @@ namespace ungula::json {
     // Inject-into-variable helpers
     // -----------------------------------------------------------------------
 
-    bool JsonWrapper::keyToStrVar(const char* key, string_t& dest) const {
-        const auto* it = find(key);
+    bool JsonWrapper::keyToStrVar(const char *key, string_t &dest) const
+    {
+        const auto *it = find(key);
         if (it == nullptr) {
             return false;
         }
@@ -421,8 +427,9 @@ namespace ungula::json {
         return true;
     }
 
-    bool JsonWrapper::keyToIntVar(const char* key, int& dest, int ignoreValue) const {
-        const auto* it = find(key);
+    bool JsonWrapper::keyToIntVar(const char *key, int &dest, int ignoreValue) const
+    {
+        const auto *it = find(key);
         if (it == nullptr) {
             return false;
         }
@@ -437,8 +444,9 @@ namespace ungula::json {
         return false;
     }
 
-    bool JsonWrapper::keyToFloatVar(const char* key, float& dest, float ignoreValue) const {
-        const auto* it = find(key);
+    bool JsonWrapper::keyToFloatVar(const char *key, float &dest, float ignoreValue) const
+    {
+        const auto *it = find(key);
         if (it == nullptr) {
             return false;
         }
@@ -453,8 +461,9 @@ namespace ungula::json {
         return false;
     }
 
-    bool JsonWrapper::keyToBoolVar(const char* key, bool& dest) const {
-        const auto* it = find(key);
+    bool JsonWrapper::keyToBoolVar(const char *key, bool &dest) const
+    {
+        const auto *it = find(key);
         if (it == nullptr) {
             return false;
         }
@@ -473,31 +482,32 @@ namespace ungula::json {
     // Debug printer (uses stdio so it stays usable in unit tests).
     // -----------------------------------------------------------------------
 
-    void JsonWrapper::printAll() const {
-        for (const auto& [key, value] : keyValueMap_) {
+    void JsonWrapper::printAll() const
+    {
+        for (const auto &[key, value] : keyValueMap_) {
             std::printf("\"%s\" => ", key.c_str());
             switch (value.type()) {
-                case Json::Type::Null:
-                    std::printf("null\n");
-                    break;
-                case Json::Type::String:
-                    std::printf("\"%s\"\n", value.asString()->c_str());
-                    break;
-                case Json::Type::Int:
-                    std::printf("%d\n", *value.asInt());
-                    break;
-                case Json::Type::Float:
-                    std::printf("%f\n", static_cast<double>(*value.asFloat()));
-                    break;
-                case Json::Type::Double:
-                    std::printf("%lf\n", *value.asDouble());
-                    break;
-                case Json::Type::Bool:
-                    std::printf("%s\n", *value.asBool() ? "true" : "false");
-                    break;
-                case Json::Type::Object:
-                    std::printf("{...object...}\n");
-                    break;
+            case Json::Type::Null:
+                std::printf("null\n");
+                break;
+            case Json::Type::String:
+                std::printf("\"%s\"\n", value.asString()->c_str());
+                break;
+            case Json::Type::Int:
+                std::printf("%d\n", *value.asInt());
+                break;
+            case Json::Type::Float:
+                std::printf("%f\n", static_cast<double>(*value.asFloat()));
+                break;
+            case Json::Type::Double:
+                std::printf("%lf\n", *value.asDouble());
+                break;
+            case Json::Type::Bool:
+                std::printf("%s\n", *value.asBool() ? "true" : "false");
+                break;
+            case Json::Type::Object:
+                std::printf("{...object...}\n");
+                break;
             }
         }
     }
@@ -506,67 +516,70 @@ namespace ungula::json {
     // Typed getters with defaults — best-effort type coercion.
     // -----------------------------------------------------------------------
 
-    int JsonWrapper::getInt(const char* key) const {
-        return lookupOr(key, 0, [](const Json& j) -> int {
+    int JsonWrapper::getInt(const char *key) const
+    {
+        return lookupOr(key, 0, [](const Json &j) -> int {
             switch (j.type()) {
-                case Json::Type::Int:
-                    return *j.asInt();
-                case Json::Type::Float:
-                    return static_cast<int>(*j.asFloat());
-                case Json::Type::Double:
-                    return static_cast<int>(*j.asDouble());
-                case Json::Type::Bool:
-                    return *j.asBool() ? 1 : 0;
-                case Json::Type::String:
-                    return std::atoi(j.asString()->c_str());
-                default:
-                    return 0;
+            case Json::Type::Int:
+                return *j.asInt();
+            case Json::Type::Float:
+                return static_cast<int>(*j.asFloat());
+            case Json::Type::Double:
+                return static_cast<int>(*j.asDouble());
+            case Json::Type::Bool:
+                return *j.asBool() ? 1 : 0;
+            case Json::Type::String:
+                return std::atoi(j.asString()->c_str());
+            default:
+                return 0;
             }
         });
     }
 
-    float JsonWrapper::getFloat(const char* key) const {
-        return lookupOr(key, 0.0f, [](const Json& j) -> float {
+    float JsonWrapper::getFloat(const char *key) const
+    {
+        return lookupOr(key, 0.0f, [](const Json &j) -> float {
             switch (j.type()) {
-                case Json::Type::Float:
-                    return *j.asFloat();
-                case Json::Type::Double:
-                    return static_cast<float>(*j.asDouble());
-                case Json::Type::Int:
-                    return static_cast<float>(*j.asInt());
-                case Json::Type::Bool:
-                    return *j.asBool() ? 1.0f : 0.0f;
-                case Json::Type::String:
-                    return std::strtof(j.asString()->c_str(), nullptr);
-                default:
-                    return 0.0f;
+            case Json::Type::Float:
+                return *j.asFloat();
+            case Json::Type::Double:
+                return static_cast<float>(*j.asDouble());
+            case Json::Type::Int:
+                return static_cast<float>(*j.asInt());
+            case Json::Type::Bool:
+                return *j.asBool() ? 1.0f : 0.0f;
+            case Json::Type::String:
+                return std::strtof(j.asString()->c_str(), nullptr);
+            default:
+                return 0.0f;
             }
         });
     }
 
-    bool JsonWrapper::getBool(const char* key) const {
-        return lookupOr(key, false, [](const Json& j) -> bool {
+    bool JsonWrapper::getBool(const char *key) const
+    {
+        return lookupOr(key, false, [](const Json &j) -> bool {
             switch (j.type()) {
-                case Json::Type::Bool:
-                    return *j.asBool();
-                case Json::Type::Int:
-                    return *j.asInt() != 0;
-                case Json::Type::Float:
-                    return *j.asFloat() != 0.0f;
-                case Json::Type::Double:
-                    return *j.asDouble() != 0.0;
-                case Json::Type::String:
-                    return *j.asString() == "true" || *j.asString() == "1";
-                default:
-                    return false;
+            case Json::Type::Bool:
+                return *j.asBool();
+            case Json::Type::Int:
+                return *j.asInt() != 0;
+            case Json::Type::Float:
+                return *j.asFloat() != 0.0f;
+            case Json::Type::Double:
+                return *j.asDouble() != 0.0;
+            case Json::Type::String:
+                return *j.asString() == "true" || *j.asString() == "1";
+            default:
+                return false;
             }
         });
     }
 
-    string_t JsonWrapper::getStr(const char* key, bool quote_strings) const {
-        return lookupOr(key, string_t(), [quote_strings](const Json& j) -> string_t {
-            return j.serialize(quote_strings);
-        });
+    string_t JsonWrapper::getStr(const char *key, bool quote_strings) const
+    {
+        return lookupOr(key, string_t(),
+                        [quote_strings](const Json &j) -> string_t { return j.serialize(quote_strings); });
     }
 
     // -----------------------------------------------------------------------
@@ -575,59 +588,70 @@ namespace ungula::json {
     // when you need to read a single value out of a one-shot payload.
     // -----------------------------------------------------------------------
 
-    bool jsonKeyToBoolVar(const char* json_string, const char* key, bool& dest) {
+    bool jsonKeyToBoolVar(const char *json_string, const char *key, bool &dest)
+    {
         JsonWrapper parser(json_string);
         return parser.keyToBoolVar(key, dest);
     }
-    bool jsonKeyToBoolVar(const JsonStr& json_string, const char* key, bool& dest) {
+    bool jsonKeyToBoolVar(const JsonStr &json_string, const char *key, bool &dest)
+    {
         return jsonKeyToBoolVar(json_string.c_str(), key, dest);
     }
-    bool jsonKeyToBoolVar(JsonStrView json_string, const char* key, bool& dest) {
+    bool jsonKeyToBoolVar(JsonStrView json_string, const char *key, bool &dest)
+    {
         return jsonKeyToBoolVar(json_string.data(), key, dest);
     }
 
-    bool jsonKeyToIntVar(const char* json_string, const char* key, int& dest, int ignoreValue) {
+    bool jsonKeyToIntVar(const char *json_string, const char *key, int &dest, int ignoreValue)
+    {
         JsonWrapper parser(json_string);
         return parser.keyToIntVar(key, dest, ignoreValue);
     }
-    bool jsonKeyToIntVar(const JsonStr& json_string, const char* key, int& dest, int ignoreValue) {
+    bool jsonKeyToIntVar(const JsonStr &json_string, const char *key, int &dest, int ignoreValue)
+    {
         return jsonKeyToIntVar(json_string.c_str(), key, dest, ignoreValue);
     }
-    bool jsonKeyToIntVar(JsonStrView json_string, const char* key, int& dest, int ignoreValue) {
+    bool jsonKeyToIntVar(JsonStrView json_string, const char *key, int &dest, int ignoreValue)
+    {
         return jsonKeyToIntVar(json_string.data(), key, dest, ignoreValue);
     }
 
-    bool jsonKeyToFloatVar(const char* json_string, const char* key, float& dest,
-                           float ignoreValue) {
+    bool jsonKeyToFloatVar(const char *json_string, const char *key, float &dest, float ignoreValue)
+    {
         JsonWrapper parser(json_string);
         return parser.keyToFloatVar(key, dest, ignoreValue);
     }
-    bool jsonKeyToFloatVar(const JsonStr& json_string, const char* key, float& dest,
-                           float ignoreValue) {
+    bool jsonKeyToFloatVar(const JsonStr &json_string, const char *key, float &dest, float ignoreValue)
+    {
         return jsonKeyToFloatVar(json_string.c_str(), key, dest, ignoreValue);
     }
-    bool jsonKeyToFloatVar(JsonStrView json_string, const char* key, float& dest,
-                           float ignoreValue) {
+    bool jsonKeyToFloatVar(JsonStrView json_string, const char *key, float &dest, float ignoreValue)
+    {
         return jsonKeyToFloatVar(json_string.data(), key, dest, ignoreValue);
     }
 
-    bool jsonKeyToStrVar(const char* json_string, const char* key, string_t& dest) {
+    bool jsonKeyToStrVar(const char *json_string, const char *key, string_t &dest)
+    {
         JsonWrapper parser(json_string);
         return parser.keyToStrVar(key, dest);
     }
-    bool jsonKeyToStrVar(const JsonStr& json_string, const char* key, string_t& dest) {
+    bool jsonKeyToStrVar(const JsonStr &json_string, const char *key, string_t &dest)
+    {
         return jsonKeyToStrVar(json_string.c_str(), key, dest);
     }
-    bool jsonKeyToStrVar(JsonStrView json_string, const char* key, string_t& dest) {
+    bool jsonKeyToStrVar(JsonStrView json_string, const char *key, string_t &dest)
+    {
         return jsonKeyToStrVar(json_string.data(), key, dest);
     }
 
-    bool isValidJson(const JsonStr& json_string) {
+    bool isValidJson(const JsonStr &json_string)
+    {
         return JsonWrapper(json_string).isValidJson();
     }
 
-    bool isValidJson(JsonStrView json_string) {
+    bool isValidJson(JsonStrView json_string)
+    {
         return JsonWrapper(json_string.data()).isValidJson();
     }
 
-}  // namespace ungula::json
+} // namespace ungula::json

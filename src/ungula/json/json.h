@@ -35,53 +35,53 @@
 
 namespace ungula::json
 {
-    using ungula::core::util::string_t;
-    using ungula::core::util::string_view_t;
-    namespace str = ungula::core::util::str;
+using ungula::core::util::string_t;
+using ungula::core::util::string_view_t;
+namespace str = ungula::core::util::str;
 
-    // ---- Free-function single-key extractors --------------------------------
-    //
-    // Each one parses the input through `JsonWrapper`, looks the key up,
-    // and writes into `dest` only if the value exists, has the right type,
-    // and differs from the current `dest` value (so callers can detect
-    // "changed" by checking the return value).
+// ---- Free-function single-key extractors --------------------------------
+//
+// Each one parses the input through `JsonWrapper`, looks the key up,
+// and writes into `dest` only if the value exists, has the right type,
+// and differs from the current `dest` value (so callers can detect
+// "changed" by checking the return value).
 
-    /// @brief Extract a boolean key into `dest`.
-    bool jsonKeyToBoolVar(const char *json_string, const char *key, bool &dest);
-    bool jsonKeyToBoolVar(const JsonStr &json_string, const char *key, bool &dest);
-    bool jsonKeyToBoolVar(JsonStrView json_string, const char *key, bool &dest);
+/// @brief Extract a boolean key into `dest`.
+bool jsonKeyToBoolVar(const char *json_string, const char *key, bool &dest);
+bool jsonKeyToBoolVar(const JsonStr &json_string, const char *key, bool &dest);
+bool jsonKeyToBoolVar(JsonStrView json_string, const char *key, bool &dest);
 
-    /// @brief Extract an integer key into `dest`. Skips the assignment when
-    ///        the parsed value equals `ignoreValue` (sentinel for "leave it").
-    bool jsonKeyToIntVar(const char *json_string, const char *key, int &dest,
-                         int ignoreValue = std::numeric_limits<int>::min());
-    bool jsonKeyToIntVar(const JsonStr &json_string, const char *key, int &dest,
-                         int ignoreValue = std::numeric_limits<int>::min());
-    bool jsonKeyToIntVar(JsonStrView json_string, const char *key, int &dest,
-                         int ignoreValue = std::numeric_limits<int>::min());
+/// @brief Extract an integer key into `dest`. Skips the assignment when
+///        the parsed value equals `ignoreValue` (sentinel for "leave it").
+bool jsonKeyToIntVar(const char *json_string, const char *key, int &dest,
+                     int ignoreValue = std::numeric_limits<int>::min());
+bool jsonKeyToIntVar(const JsonStr &json_string, const char *key, int &dest,
+                     int ignoreValue = std::numeric_limits<int>::min());
+bool jsonKeyToIntVar(JsonStrView json_string, const char *key, int &dest,
+                     int ignoreValue = std::numeric_limits<int>::min());
 
-    /// @brief Extract a float key. Same `ignoreValue` semantics.
-    bool jsonKeyToFloatVar(const char *json_string, const char *key, float &dest,
-                           float ignoreValue = std::numeric_limits<float>::min());
-    bool jsonKeyToFloatVar(const JsonStr &json_string, const char *key, float &dest,
-                           float ignoreValue = std::numeric_limits<float>::min());
-    bool jsonKeyToFloatVar(JsonStrView json_string, const char *key, float &dest,
-                           float ignoreValue = std::numeric_limits<float>::min());
+/// @brief Extract a float key. Same `ignoreValue` semantics.
+bool jsonKeyToFloatVar(const char *json_string, const char *key, float &dest,
+                       float ignoreValue = std::numeric_limits<float>::min());
+bool jsonKeyToFloatVar(const JsonStr &json_string, const char *key, float &dest,
+                       float ignoreValue = std::numeric_limits<float>::min());
+bool jsonKeyToFloatVar(JsonStrView json_string, const char *key, float &dest,
+                       float ignoreValue = std::numeric_limits<float>::min());
 
-    /// @brief Extract a string key into `dest`.
-    bool jsonKeyToStrVar(const char *json_string, const char *key, string_t &dest);
-    bool jsonKeyToStrVar(const JsonStr &json_string, const char *key, string_t &dest);
-    bool jsonKeyToStrVar(JsonStrView json_string, const char *key, string_t &dest);
+/// @brief Extract a string key into `dest`.
+bool jsonKeyToStrVar(const char *json_string, const char *key, string_t &dest);
+bool jsonKeyToStrVar(const JsonStr &json_string, const char *key, string_t &dest);
+bool jsonKeyToStrVar(JsonStrView json_string, const char *key, string_t &dest);
 
-    /// @brief Quick syntactic validity check (does the document parse cleanly?).
-    bool isValidJson(const JsonStr &json_string);
-    bool isValidJson(JsonStrView json_string);
+/// @brief Quick syntactic validity check (does the document parse cleanly?).
+bool isValidJson(const JsonStr &json_string);
+bool isValidJson(JsonStrView json_string);
 
-    // ---- JsonWrapper --------------------------------------------------------
+// ---- JsonWrapper --------------------------------------------------------
 
-    class JsonWrapper {
+class JsonWrapper {
     public:
-        using json_map_t = std::vector<std::pair<string_t, Json> >;
+        using json_map_t = std::vector<std::pair<string_t, Json>>;
 
         static constexpr int MAX_PARSE_DEPTH = 4;
 
@@ -95,15 +95,15 @@ namespace ungula::json
 
         explicit JsonWrapper(const char *jsonStr, uint8_t levels = MAX_PARSE_DEPTH)
         {
-            parseJson(jsonStr, levels);
+                parseJson(jsonStr, levels);
         }
         explicit JsonWrapper(const string_t &jsonStr, uint8_t levels = MAX_PARSE_DEPTH)
         {
-            parseJson(jsonStr.c_str(), levels);
+                parseJson(jsonStr.c_str(), levels);
         }
         explicit JsonWrapper(string_view_t jsonStr, uint8_t levels = MAX_PARSE_DEPTH)
         {
-            parseJson(jsonStr.data(), levels);
+                parseJson(jsonStr.data(), levels);
         }
 
         /// @brief Build a sub-wrapper from a parent that contains only the
@@ -120,7 +120,8 @@ namespace ungula::json
         ///   * `new_root = nullptr` → `{ "payload.settings.world": 1 }`
         ///   * `new_root = ""`      → `{ "world": 1 }`
         ///   * `new_root = "what"`  → `{ "what.world": 1 }`
-        explicit JsonWrapper(const JsonWrapper &json, const char *key, const char *new_root = nullptr);
+        explicit JsonWrapper(const JsonWrapper &json, const char *key,
+                             const char *new_root = nullptr);
 
         /// @brief Build a wrapper directly from an existing flat map. Useful
         ///        for tests and for hand-built fixtures.
@@ -130,17 +131,17 @@ namespace ungula::json
 
         bool isValidJson() const
         {
-            return validJson_;
+                return validJson_;
         }
         bool isEmpty() const
         {
-            return isEmpty_;
+                return isEmpty_;
         }
 
         /// @brief True when the wrapper contains a key matching `key`.
         bool has(const char *key) const
         {
-            return find(key) != nullptr;
+                return find(key) != nullptr;
         }
 
         // ---- Typed getters with default ------------------------------------
@@ -173,8 +174,10 @@ namespace ungula::json
 
         bool keyToStrVar(const char *key, string_t &dest) const;
         bool keyToBoolVar(const char *key, bool &dest) const;
-        bool keyToIntVar(const char *key, int &dest, int ignoreValue = std::numeric_limits<int>::min()) const;
-        bool keyToFloatVar(const char *key, float &dest, float ignoreValue = std::numeric_limits<float>::min()) const;
+        bool keyToIntVar(const char *key, int &dest,
+                         int ignoreValue = std::numeric_limits<int>::min()) const;
+        bool keyToFloatVar(const char *key, float &dest,
+                           float ignoreValue = std::numeric_limits<float>::min()) const;
 
         /// @brief Print every (key, value) pair to stdout. Debug helper —
         ///        does NOT use the logging library on purpose so this code
@@ -190,26 +193,26 @@ namespace ungula::json
 
         uint8_t maxParseLevels() const
         {
-            return static_cast<uint8_t>(max_parseLevels_);
+                return static_cast<uint8_t>(max_parseLevels_);
         }
 
         const Json *find(const char *key) const
         {
-            auto it =
-                std::find_if(keyValueMap_.begin(), keyValueMap_.end(), [&](auto const &kv) { return kv.first == key; });
-            if (it == keyValueMap_.end()) {
-                return nullptr;
-            }
-            return &it->second;
+                auto it = std::find_if(keyValueMap_.begin(), keyValueMap_.end(),
+                                       [&](auto const &kv) { return kv.first == key; });
+                if (it == keyValueMap_.end()) {
+                        return nullptr;
+                }
+                return &it->second;
         }
 
         template <class T, class F> inline T lookupOr(const char *key, T fallback, F conv) const
         {
-            const Json *it = find(key);
-            if (it != nullptr) {
-                return conv(*it);
-            }
-            return fallback;
+                const Json *it = find(key);
+                if (it != nullptr) {
+                        return conv(*it);
+                }
+                return fallback;
         }
 
         void parseJson(const char *jsonStr, uint8_t levels);
@@ -222,7 +225,8 @@ namespace ungula::json
         const char *parseStringDirect(const char *p, char *buffer, size_t *outLen) const;
 
         // Generic non-string value parser — numbers, bool, null.
-        const char *parseValueDirect(const char *p, char *buffer, size_t *outLen, Json::Type &type) const;
-    };
+        const char *parseValueDirect(const char *p, char *buffer, size_t *outLen,
+                                     Json::Type &type) const;
+};
 
 } // namespace ungula::json

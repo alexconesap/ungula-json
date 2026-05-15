@@ -14,20 +14,20 @@
 namespace test_support
 {
 
-    // Trace helper used by a couple of integration-style tests. Writes to
-    // stdout (gtest captures it). It's a function rather than a macro so
-    // call sites read the same as `printf`.
-    inline void ulog(const char *msg)
-    {
+// Trace helper used by a couple of integration-style tests. Writes to
+// stdout (gtest captures it). It's a function rather than a macro so
+// call sites read the same as `printf`.
+inline void ulog(const char *msg)
+{
         std::puts(msg);
-    }
+}
 
-    // Fixed epoch timestamp used by the message-shape tests so the expected
-    // string stays stable from run to run.
-    inline double getEpochTime()
-    {
+// Fixed epoch timestamp used by the message-shape tests so the expected
+// string stays stable from run to run.
+inline double getEpochTime()
+{
         return 1700000000.0;
-    }
+}
 
 } // namespace test_support
 

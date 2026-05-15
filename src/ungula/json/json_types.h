@@ -34,68 +34,69 @@
 
 namespace ungula::json
 {
-    using ungula::core::util::string_t;
-    using ungula::core::util::string_view_t;
-    namespace str = ungula::core::util::str;
+using ungula::core::util::string_t;
+using ungula::core::util::string_view_t;
+namespace str = ungula::core::util::str;
 
-    using JsonStr = string_t;
-    using JsonStrView = string_view_t;
+using JsonStr = string_t;
+using JsonStrView = string_view_t;
 
-    struct Json; // forward declaration
+struct Json; // forward declaration
 
-    using JsonObject = std::vector<std::pair<string_t, Json> >;
+using JsonObject = std::vector<std::pair<string_t, Json>>;
 
-    /// @brief Tagged-union JSON value.
-    ///
-    /// Holds one of: null, string, int, float, double, bool, or a nested
-    /// `JsonObject`. The Type enum mirrors the variant index so callers can
-    /// switch on it cheaply. Implicit conversions are provided for the
-    /// common literal types so you can write idiomatic code:
-    ///
-    /// ```cpp
-    /// using namespace ungula::json;
-    /// JsonObject person = {
-    ///   {"name",    Json("Alice")},
-    ///   {"age",     Json(30)},
-    ///   {"premium", Json(true)},
-    /// };
-    /// ```
-    struct Json {
-        using JsonValue = std::variant<std::monostate, string_t, int, float, double, bool, JsonObject>;
+/// @brief Tagged-union JSON value.
+///
+/// Holds one of: null, string, int, float, double, bool, or a nested
+/// `JsonObject`. The Type enum mirrors the variant index so callers can
+/// switch on it cheaply. Implicit conversions are provided for the
+/// common literal types so you can write idiomatic code:
+///
+/// ```cpp
+/// using namespace ungula::json;
+/// JsonObject person = {
+///   {"name",    Json("Alice")},
+///   {"age",     Json(30)},
+///   {"premium", Json(true)},
+/// };
+/// ```
+struct Json {
+        using JsonValue =
+            std::variant<std::monostate, string_t, int, float, double, bool, JsonObject>;
 
         JsonValue value;
 
         enum class Type : uint8_t {
-            Null = 0,
-            String,
-            Int,
-            Float,
-            Double,
-            Bool,
-            Object,
+                Null = 0,
+                String,
+                Int,
+                Float,
+                Double,
+                Bool,
+                Object,
         };
 
         Type type() const
         {
-            // Ordinal must match the JsonValue alternative order above.
-            switch (value.index()) {
-            case 0:
-                return Type::Null;
-            case 1:
-                return Type::String;
-            case 2:
-                return Type::Int;
-            case 3:
-                return Type::Float;
-            case 4:
-                return Type::Double;
-            case 5:
-                return Type::Bool;
-            case 6:
-                return Type::Object;
-            default:
-                return Type::Null;
-            }
+                // Ordinal must match the JsonValue alternative order above.
+                switch (value.index()) {
+                case 0:
+                        return Type::Null;
+                case 1:
+                        return Type::String;
+                case 2:
+                        return Type::Int;
+                case 3:
+                        return Type::Float;
+                case 4:
+                        return Type::Double;
+                case 5:
+                        return Type::Bool;
+                case 6:
+                        return Type::Object;
+                default:
+                        return Type::Null;
+                }
         }
 
         Json() = default;
@@ -148,37 +149,38 @@ namespace ungula::json
 
         bool isObject() const
         {
-            return std::holds_alternative<JsonObject>(value);
+                return std::holds_alternative<JsonObject>(value);
         }
         bool isString() const
         {
-            return std::holds_alternative<string_t>(value);
+                return std::holds_alternative<string_t>(value);
         }
         bool isInt() const
         {
-            return std::holds_alternative<int>(value);
+                return std::holds_alternative<int>(value);
         }
         bool isFloat() const
         {
-            return std::holds_alternative<float>(value);
+                return std::holds_alternative<float>(value);
         }
         bool isDouble() const
         {
-            return std::holds_alternative<double>(value);
+                return std::holds_alternative<double>(value);
         }
         bool isBool() const
         {
-            return std::holds_alternative<bool>(value);
+                return std::holds_alternative<bool>(value);
         }
         bool isNull() const
         {
-            return std::holds_alternative<std::monostate>(value);
+                return std::holds_alternative<std::monostate>(value);
         }
 
         bool isEmpty() const
         {
-            return std::holds_alternative<std::monostate>(value) ||
-                   (std::holds_alternative<string_t>(value) && std::get<string_t>(value).empty());
+                return std::holds_alternative<std::monostate>(value) ||
+                       (std::holds_alternative<string_t>(value) &&
+                        std::get<string_t>(value).empty());
         }
 
         // ---- Dotted-path lookup -------------------------------------------
@@ -188,80 +190,81 @@ namespace ungula::json
 
         Json *find(const string_t &key)
         {
-            return findImpl(key);
+                return findImpl(key);
         }
         const Json *find(const string_t &key) const
         {
-            return const_cast<Json *>(this)->findImpl(key);
+                return const_cast<Json *>(this)->findImpl(key);
         }
 
         bool has(const string_t &key) const
         {
-            return find(key) != nullptr;
+                return find(key) != nullptr;
         }
 
         bool update(const string_t &key, const Json &newVal)
         {
-            if (auto *p = find(key)) {
-                *p = newVal;
-                return true;
-            }
-            return false;
+                if (auto *p = find(key)) {
+                        *p = newVal;
+                        return true;
+                }
+                return false;
         }
 
         bool remove(const string_t &key)
         {
-            if (!isObject()) {
-                return false;
-            }
-            auto &obj = std::get<JsonObject>(value);
+                if (!isObject()) {
+                        return false;
+                }
+                auto &obj = std::get<JsonObject>(value);
 
-            auto dot = key.find('.');
-            if (dot == string_t::npos) {
-                // top-level remove
-                auto it = std::remove_if(obj.begin(), obj.end(), [&](auto &kv) { return kv.first == key; });
-                if (it == obj.end()) {
-                    return false;
+                auto dot = key.find('.');
+                if (dot == string_t::npos) {
+                        // top-level remove
+                        auto it = std::remove_if(obj.begin(), obj.end(),
+                                                 [&](auto &kv) { return kv.first == key; });
+                        if (it == obj.end()) {
+                                return false;
+                        }
+                        obj.erase(it, obj.end());
+                        return true;
                 }
-                obj.erase(it, obj.end());
-                return true;
-            }
-            // nested remove: descend into the prefix
-            string_t head = key.substr(0, dot);
-            string_t tail = key.substr(dot + 1);
-            for (auto &kv : obj) {
-                if (kv.first == head) {
-                    return kv.second.remove(tail);
+                // nested remove: descend into the prefix
+                string_t head = key.substr(0, dot);
+                string_t tail = key.substr(dot + 1);
+                for (auto &kv : obj) {
+                        if (kv.first == head) {
+                                return kv.second.remove(tail);
+                        }
                 }
-            }
-            return false;
+                return false;
         }
 
         bool add(const string_t &key, const Json &newVal)
         {
-            if (!isObject()) {
-                return false;
-            }
-            auto &obj = std::get<JsonObject>(value);
+                if (!isObject()) {
+                        return false;
+                }
+                auto &obj = std::get<JsonObject>(value);
 
-            auto dot = key.find('.');
-            if (dot == string_t::npos) {
-                // top-level add (no overwrite)
-                if (has(key)) {
-                    return false;
+                auto dot = key.find('.');
+                if (dot == string_t::npos) {
+                        // top-level add (no overwrite)
+                        if (has(key)) {
+                                return false;
+                        }
+                        obj.emplace_back(key, newVal);
+                        return true;
                 }
-                obj.emplace_back(key, newVal);
-                return true;
-            }
-            // nested add: descend into the prefix
-            string_t head = key.substr(0, dot);
-            string_t tail = key.substr(dot + 1);
-            for (auto &kv : obj) {
-                if (kv.first == head) {
-                    return kv.second.add(tail, newVal);
+                // nested add: descend into the prefix
+                string_t head = key.substr(0, dot);
+                string_t tail = key.substr(dot + 1);
+                for (auto &kv : obj) {
+                        if (kv.first == head) {
+                                return kv.second.add(tail, newVal);
+                        }
                 }
-            }
-            return false;
+                return false;
         }
 
         // ---- Typed accessors ----------------------------------------------
@@ -269,52 +272,52 @@ namespace ungula::json
 
         std::optional<string_t> asString() const
         {
-            if (auto *p = std::get_if<string_t>(&value)) {
-                return *p;
-            }
-            return std::nullopt;
+                if (auto *p = std::get_if<string_t>(&value)) {
+                        return *p;
+                }
+                return std::nullopt;
         }
         std::optional<int> asInt() const
         {
-            if (auto *p = std::get_if<int>(&value)) {
-                return *p;
-            }
-            return std::nullopt;
+                if (auto *p = std::get_if<int>(&value)) {
+                        return *p;
+                }
+                return std::nullopt;
         }
         std::optional<float> asFloat() const
         {
-            if (auto *p = std::get_if<float>(&value)) {
-                return *p;
-            }
-            return std::nullopt;
+                if (auto *p = std::get_if<float>(&value)) {
+                        return *p;
+                }
+                return std::nullopt;
         }
         std::optional<double> asDouble() const
         {
-            if (auto *p = std::get_if<double>(&value)) {
-                return *p;
-            }
-            return std::nullopt;
+                if (auto *p = std::get_if<double>(&value)) {
+                        return *p;
+                }
+                return std::nullopt;
         }
         std::optional<bool> asBool() const
         {
-            if (auto *p = std::get_if<bool>(&value)) {
-                return *p;
-            }
-            return std::nullopt;
+                if (auto *p = std::get_if<bool>(&value)) {
+                        return *p;
+                }
+                return std::nullopt;
         }
         std::optional<JsonObject> asObject() const
         {
-            if (auto *p = std::get_if<JsonObject>(&value)) {
-                return *p;
-            }
-            return std::nullopt;
+                if (auto *p = std::get_if<JsonObject>(&value)) {
+                        return *p;
+                }
+                return std::nullopt;
         }
         std::optional<std::monostate> asNull() const
         {
-            if (std::holds_alternative<std::monostate>(value)) {
-                return std::monostate{};
-            }
-            return std::nullopt;
+                if (std::holds_alternative<std::monostate>(value)) {
+                        return std::monostate{};
+                }
+                return std::nullopt;
         }
 
         /// @brief Recursively serialize this value to JSON text.
@@ -323,94 +326,94 @@ namespace ungula::json
         ///        value (e.g. for embedding into a printed table).
         string_t serialize(bool quote_strings = false) const
         {
-            struct Visitor {
-                bool quote;
-                explicit Visitor(bool quote_in)
-                        : quote(quote_in)
-                {
-                }
-
-                string_t operator()(std::monostate) const
-                {
-                    return "null";
-                }
-                string_t operator()(const string_t &str) const
-                {
-                    if (quote) {
-                        string_t out;
-                        out.push_back('"');
-                        out += str::escapeString(str);
-                        out.push_back('"');
-                        return out;
-                    }
-                    return str::escapeString(str);
-                }
-                string_t operator()(int val) const
-                {
-                    return str::num_to_string(val);
-                }
-                string_t operator()(float val) const
-                {
-                    return str::num_to_string(val);
-                }
-                string_t operator()(double val) const
-                {
-                    return str::num_to_string(val);
-                }
-                string_t operator()(bool val) const
-                {
-                    return val ? "true" : "false";
-                }
-                string_t operator()(const JsonObject &obj) const
-                {
-                    string_t out = "{";
-                    bool first = true;
-                    for (const auto &pair : obj) {
-                        if (!first) {
-                            out.push_back(',');
+                struct Visitor {
+                        bool quote;
+                        explicit Visitor(bool quote_in)
+                                : quote(quote_in)
+                        {
                         }
-                        first = false;
-                        out.push_back('"');
-                        out += str::escapeString(pair.first);
-                        out.push_back('"');
-                        out.push_back(':');
-                        out += pair.second.serialize(quote);
-                    }
-                    out.push_back('}');
-                    return out;
-                }
-            };
-            return std::visit(Visitor{ quote_strings }, value);
+
+                        string_t operator()(std::monostate) const
+                        {
+                                return "null";
+                        }
+                        string_t operator()(const string_t &str) const
+                        {
+                                if (quote) {
+                                        string_t out;
+                                        out.push_back('"');
+                                        out += str::escapeString(str);
+                                        out.push_back('"');
+                                        return out;
+                                }
+                                return str::escapeString(str);
+                        }
+                        string_t operator()(int val) const
+                        {
+                                return str::num_to_string(val);
+                        }
+                        string_t operator()(float val) const
+                        {
+                                return str::num_to_string(val);
+                        }
+                        string_t operator()(double val) const
+                        {
+                                return str::num_to_string(val);
+                        }
+                        string_t operator()(bool val) const
+                        {
+                                return val ? "true" : "false";
+                        }
+                        string_t operator()(const JsonObject &obj) const
+                        {
+                                string_t out = "{";
+                                bool first = true;
+                                for (const auto &pair : obj) {
+                                        if (!first) {
+                                                out.push_back(',');
+                                        }
+                                        first = false;
+                                        out.push_back('"');
+                                        out += str::escapeString(pair.first);
+                                        out.push_back('"');
+                                        out.push_back(':');
+                                        out += pair.second.serialize(quote);
+                                }
+                                out.push_back('}');
+                                return out;
+                        }
+                };
+                return std::visit(Visitor{ quote_strings }, value);
         }
 
     private:
         // Single implementation backing both const and non-const find().
         Json *findImpl(const string_t &key)
         {
-            if (!isObject()) {
-                return nullptr;
-            }
-            auto &obj = std::get<JsonObject>(value);
+                if (!isObject()) {
+                        return nullptr;
+                }
+                auto &obj = std::get<JsonObject>(value);
 
-            auto dot = key.find('.');
-            if (dot == string_t::npos) {
+                auto dot = key.find('.');
+                if (dot == string_t::npos) {
+                        for (auto &kv : obj) {
+                                if (kv.first == key) {
+                                        return &kv.second;
+                                }
+                        }
+                        return nullptr;
+                }
+                // nested lookup
+                string_t head = key.substr(0, dot);
+                string_t tail = key.substr(dot + 1);
                 for (auto &kv : obj) {
-                    if (kv.first == key) {
-                        return &kv.second;
-                    }
+                        if (kv.first == head) {
+                                return kv.second.find(tail);
+                        }
                 }
                 return nullptr;
-            }
-            // nested lookup
-            string_t head = key.substr(0, dot);
-            string_t tail = key.substr(dot + 1);
-            for (auto &kv : obj) {
-                if (kv.first == head) {
-                    return kv.second.find(tail);
-                }
-            }
-            return nullptr;
         }
-    };
+};
 
 } // namespace ungula::json

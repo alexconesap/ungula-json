@@ -9,12 +9,41 @@ on `UngulaCore` for `string_t` / `string_view_t` and a few string helpers.
 
 ---
 
+## LLM quick map
+
+- **Primary include**: `#include <ungula/json.h>`.
+- **Arduino discovery include**: `#include <ungula_json.h>` (forwarder only; host code should keep using the real header).
+- **Namespace root**: `ungula::json`.
+- **Language baseline**: C++17 minimum (examples avoid post-C++17 requirements).
+- **Supported architectures**: `*`.
+- **Read order for coding agents**: `Usage` (working patterns) -> `API` (symbols/signatures) -> `Lifecycle`/`Error handling`/`Threading` notes in this file.
+
+### Use-case index
+
+- [Use case: extract one key from a large incoming buffer](#use-case-extract-one-key-from-a-large-incoming-buffer)
+- [Use case: extract any-typed leaf key from a `string_t` payload](#use-case-extract-any-typed-leaf-key-from-a-stringt-payload)
+- [Use case: full parse with dotted-path lookup](#use-case-full-parse-with-dotted-path-lookup)
+- [Use case: change-detection against caller-owned variables](#use-case-change-detection-against-caller-owned-variables)
+- [Use case: slice a sub-document without re-parsing](#use-case-slice-a-sub-document-without-re-parsing)
+- [Use case: build and serialize an outgoing document](#use-case-build-and-serialize-an-outgoing-document)
+- [Use case: in-place edits on a `Json` value tree](#use-case-in-place-edits-on-a-json-value-tree)
+- [Use case: depth-limited parse](#use-case-depth-limited-parse)
+- [Use case: cheap syntactic validity check](#use-case-cheap-syntactic-validity-check)
+
+### LLM rules
+
+- Use only symbols and include paths documented in this file; do not infer extra public API from implementation files.
+- Prefer the use-case patterns here over ad-hoc rewrites; keep dependency wiring and lifecycle order identical unless the task explicitly changes API design.
+- Treat headers under `detail/`, `platform/`, and `platforms/` as internal unless this document calls them out as public.
+- If required behavior is missing from the documented API, report the gap explicitly instead of inventing new public symbols.
+
+
 ## Usage
 
 ### Use case: extract one key from a large incoming buffer
 
 ```cpp
-#include <json/json_utils.h>
+#include <ungula/json/json_utils.h>
 #include <ungula/core/util/string_types.h>
 #include <cstring>
 
@@ -36,7 +65,7 @@ two top-level fields. Constant memory; one allocation for the result.
 ### Use case: extract any-typed leaf key from a `string_t` payload
 
 ```cpp
-#include <json/json_utils.h>
+#include <ungula/json/json_utils.h>
 #include <ungula/core/util/string_types.h>
 
 using ungula::core::util::string_t;
@@ -56,7 +85,7 @@ linear scan and don't care that nested duplicates collapse to the first.
 ### Use case: full parse with dotted-path lookup
 
 ```cpp
-#include <json/json.h>
+#include <ungula/json/json.h>
 #include <ungula/core/util/string_types.h>
 
 using ungula::core::util::string_t;
@@ -79,7 +108,7 @@ nested access via dotted paths.
 ### Use case: change-detection against caller-owned variables
 
 ```cpp
-#include <json/json.h>
+#include <ungula/json/json.h>
 #include <ungula/core/util/string_types.h>
 
 using ungula::core::util::string_t;
@@ -109,7 +138,7 @@ treated as "leave it" and skipped.
 ### Use case: slice a sub-document without re-parsing
 
 ```cpp
-#include <json/json.h>
+#include <ungula/json/json.h>
 
 using namespace ungula::json;
 
@@ -131,8 +160,8 @@ void slice(const JsonWrapper& main_doc) {
 ### Use case: build and serialize an outgoing document
 
 ```cpp
-#include <json/json_types.h>
-#include <json/json_utils.h>
+#include <ungula/json/json_types.h>
+#include <ungula/json/json_utils.h>
 #include <ungula/core/util/string_types.h>
 
 using ungula::core::util::string_t;
@@ -161,7 +190,7 @@ order on purpose (it is a `std::vector<std::pair<...>>`, not a `std::map`).
 ### Use case: in-place edits on a `Json` value tree
 
 ```cpp
-#include <json/json_types.h>
+#include <ungula/json/json_types.h>
 
 using namespace ungula::json;
 
@@ -186,7 +215,7 @@ void edit() {
 ### Use case: depth-limited parse
 
 ```cpp
-#include <json/json.h>
+#include <ungula/json/json.h>
 using namespace ungula::json;
 
 JsonWrapper shallow(R"({"a":{"b":{"c":{"d":{"e":1}}}}})", /*levels=*/3);
@@ -199,7 +228,7 @@ Default cap is `JsonWrapper::MAX_PARSE_DEPTH` (4).
 ### Use case: cheap syntactic validity check
 
 ```cpp
-#include <json/json.h>
+#include <ungula/json/json.h>
 using namespace ungula::json;
 
 isValidJson(R"({"a":1})");                   // true
@@ -216,7 +245,7 @@ whitespace. Layer strict validation on top if you need it.
 
 ### `ungula::json::Json` — tagged-union value
 
-Defined in `<json/json_types.h>`.
+Defined in `<ungula/json/json_types.h>`.
 
 `Json` holds one of: `null` (`std::monostate`), `string_t`, `int`,
 `float`, `double`, `bool`, or `JsonObject`. The variant alternatives are
@@ -269,7 +298,7 @@ manipulate.
 
 ### `ungula::json::JsonWrapper` — full parser
 
-Defined in `<json/json.h>`. Walks a document once, stores every leaf in
+Defined in `<ungula/json/json.h>`. Walks a document once, stores every leaf in
 a flat `vector<pair<key, Json>>` keyed by dotted path. Read-only after
 construction.
 
@@ -400,9 +429,9 @@ new keys are appended (preserves order).
 
 | Header                  | Symbols                                                          |
 |-------------------------|------------------------------------------------------------------|
-| `<json/json_types.h>`   | `Json`, `JsonObject`, `JsonStr`, `JsonStrView`                   |
-| `<json/json.h>`         | `JsonWrapper`, `jsonKeyToXxxVar`, `isValidJson`                  |
-| `<json/json_utils.h>`   | `serializeJson`, `jsonExtract*`, `findInObject`, `updateInObject`, `putTojson` |
+| `<ungula/json/json_types.h>`   | `Json`, `JsonObject`, `JsonStr`, `JsonStrView`                   |
+| `<ungula/json/json.h>`         | `JsonWrapper`, `jsonKeyToXxxVar`, `isValidJson`                  |
+| `<ungula/json/json_utils.h>`   | `serializeJson`, `jsonExtract*`, `findInObject`, `updateInObject`, `putTojson` |
 | `<ungula_json.h>`       | Umbrella include — pulls all of the above                        |
 
 Code inside `namespace ungula::json` reaches `string_t`,

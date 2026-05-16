@@ -2,6 +2,8 @@
 
 > **High-performance embedded C++ libraries for ESP32, STM32 and other MCUs** — compact JSON parser, builder and zero-alloc single-key extractor.
 
+> **LLM usage note:** if this library is consumed from a coding AI workflow, explicitly point the agent to `API.md` first. `API.md` is the LLM-facing contract (public API + examples + constraints) and avoids wasting time/tokens scanning source files and this human-oriented README.
+
 A small JSON library for ESP32-class targets. It does three things and tries
 to do them well:
 
@@ -24,11 +26,27 @@ No Arduino headers. No logging. No exceptions. Just C++17 and the standard
 library. The only external dependency is `UngulaCore` for the string
 type aliases and a handful of string utilities.
 
+## Table of Contents
+
+- [Quick taste](#quick-taste)
+- [Headers](#headers)
+- [API tour](#api-tour)
+  - [`Json` — tagged-union value](#json-tagged-union-value)
+  - [`JsonObject` — order-preserving map](#jsonobject-order-preserving-map)
+  - [`JsonWrapper` — full parser](#jsonwrapper-full-parser)
+  - [Single-key extractors (the embedded fast path)](#single-key-extractors-the-embedded-fast-path)
+  - [Validity check](#validity-check)
+- [Dependencies](#dependencies)
+- [Testing](#testing)
+- [Acknowledgements](#acknowledgements)
+- [License](#license)
+- [Arduino CLI symlink note (rarely relevant)](#arduino-cli-symlink-note-rarely-relevant)
+
 ## Quick taste
 
 ```cpp
-#include <json/json.h>
-#include <json/json_utils.h>
+#include <ungula/json/json.h>
+#include <ungula/json/json_utils.h>
 
 using namespace ungula::json;
 using ungula::core::util::string_t;          // one-liner alias for the project-wide `std::string`
@@ -61,9 +79,9 @@ string_t out = serializeJson(reply);
 
 | Header                  | What it gives you                                          |
 |-------------------------|------------------------------------------------------------|
-| `<json/json_types.h>`   | `Json` value type, `JsonObject` container, type predicates |
-| `<json/json.h>`         | `JsonWrapper` full parser + free single-key helpers        |
-| `<json/json_utils.h>`   | `serializeJson`, raw-buffer extractors, builder helpers    |
+| `<ungula/json/json_types.h>`   | `Json` value type, `JsonObject` container, type predicates |
+| `<ungula/json/json.h>`         | `JsonWrapper` full parser + free single-key helpers        |
+| `<ungula/json/json_utils.h>`   | `serializeJson`, raw-buffer extractors, builder helpers    |
 | `<ungula_json.h>`   | Umbrella include — pulls all of the above                  |
 
 Everything lives in `ungula::json::`.
